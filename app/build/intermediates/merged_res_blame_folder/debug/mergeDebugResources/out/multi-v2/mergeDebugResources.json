@@ -5068,25 +5068,6 @@
                     }
                 },
                 {
-                    "source": "/root/DroidClean/app/src/main/res/values/themes.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "10",
-                        "endColumns": "12",
-                        "endOffsets": "541"
-                    },
-                    "to": {
-                        "startLines": "6392",
-                        "startColumns": "4",
-                        "startOffsets": "447349",
-                        "endLines": "6400",
-                        "endColumns": "12",
-                        "endOffsets": "447835"
-                    }
-                },
-                {
                     "source": "/root/.gradle/caches/8.11.1/transforms/5c74fd909279c9ef7dc9e45b4f6b97e9/transformed/savedstate-1.2.1/res/values/values.xml",
                     "from": {
                         "startLines": "2",
@@ -5289,6 +5270,25 @@
                         "endLines": "35,653,654,655,656,1043,1044,1045,2180,5530,5533,5536,10251",
                         "endColumns": "51,60,61,61,63,58,56,53,12,12,12,12,24",
                         "endOffsets": "1687,33765,33827,33889,33953,62139,62196,62250,155174,389104,389230,389358,676558"
+                    }
+                },
+                {
+                    "source": "/root/work-autoupdate/DroidClean/app/src/main/res/values/themes.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "10",
+                        "endColumns": "12",
+                        "endOffsets": "541"
+                    },
+                    "to": {
+                        "startLines": "6392",
+                        "startColumns": "4",
+                        "startOffsets": "447349",
+                        "endLines": "6400",
+                        "endColumns": "12",
+                        "endOffsets": "447835"
                     }
                 },
                 {

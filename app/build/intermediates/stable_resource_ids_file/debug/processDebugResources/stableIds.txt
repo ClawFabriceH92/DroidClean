@@ -260,6 +260,7 @@ com.fabrice.droidclean:style/Widget.AppCompat.ActionMode = 0x7f0f02ef
 com.fabrice.droidclean:style/Widget.AppCompat.ActionButton.Overflow = 0x7f0f02ee
 com.fabrice.droidclean:style/Widget.AppCompat.ActionButton.CloseMode = 0x7f0f02ed
 com.fabrice.droidclean:style/Widget.AppCompat.ActionBar.TabText = 0x7f0f02ea
+com.fabrice.droidclean:xml/file_paths = 0x7f110000
 com.fabrice.droidclean:style/Widget.MaterialComponents.TimePicker.Button = 0x7f0f0458
 com.fabrice.droidclean:style/Widget.AppCompat.ActionBar = 0x7f0f02e7
 com.fabrice.droidclean:style/ThemeOverlay.MaterialComponents.Toolbar.Surface = 0x7f0f02e6

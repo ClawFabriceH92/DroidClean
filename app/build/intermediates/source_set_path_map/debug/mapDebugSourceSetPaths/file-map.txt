@@ -31,10 +31,10 @@ com.fabrice.droidclean.app-appcompat-1.7.0-29 /root/.gradle/caches/8.11.1/transf
 com.fabrice.droidclean.app-core-ktx-1.15.0-30 /root/.gradle/caches/8.11.1/transforms/e6c083756dde14f69fbeb2ee42600800/transformed/core-ktx-1.15.0/res
 com.fabrice.droidclean.app-savedstate-ktx-1.2.1-31 /root/.gradle/caches/8.11.1/transforms/ec87fe8fa0980d57272b0af8a61d66a8/transformed/savedstate-ktx-1.2.1/res
 com.fabrice.droidclean.app-fragment-1.5.4-32 /root/.gradle/caches/8.11.1/transforms/f61735406c0394b51a62885f410c8e1f/transformed/fragment-1.5.4/res
-com.fabrice.droidclean.app-pngs-33 /root/DroidClean/app/build/generated/res/pngs/debug
-com.fabrice.droidclean.app-resValues-34 /root/DroidClean/app/build/generated/res/resValues/debug
-com.fabrice.droidclean.app-packageDebugResources-35 /root/DroidClean/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
-com.fabrice.droidclean.app-packageDebugResources-36 /root/DroidClean/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
-com.fabrice.droidclean.app-debug-37 /root/DroidClean/app/build/intermediates/merged_res/debug/mergeDebugResources
-com.fabrice.droidclean.app-debug-38 /root/DroidClean/app/src/debug/res
-com.fabrice.droidclean.app-main-39 /root/DroidClean/app/src/main/res
+com.fabrice.droidclean.app-pngs-33 /root/work-autoupdate/DroidClean/app/build/generated/res/pngs/debug
+com.fabrice.droidclean.app-resValues-34 /root/work-autoupdate/DroidClean/app/build/generated/res/resValues/debug
+com.fabrice.droidclean.app-packageDebugResources-35 /root/work-autoupdate/DroidClean/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.fabrice.droidclean.app-packageDebugResources-36 /root/work-autoupdate/DroidClean/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.fabrice.droidclean.app-debug-37 /root/work-autoupdate/DroidClean/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.fabrice.droidclean.app-debug-38 /root/work-autoupdate/DroidClean/app/src/debug/res
+com.fabrice.droidclean.app-main-39 /root/work-autoupdate/DroidClean/app/src/main/res

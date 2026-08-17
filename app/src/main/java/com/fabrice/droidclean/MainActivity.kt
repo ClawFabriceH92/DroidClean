@@ -1,4 +1,5 @@
 package com.fabrice.droidclean
+import com.fabrice.droidclean.update.UpdateManager
 
 import android.app.ActivityManager
 import android.content.Context
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        UpdateManager.start(this)
         setContentView(R.layout.activity_main)
 
         // Nettoyage

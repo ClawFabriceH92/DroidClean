@@ -22,3 +22,4 @@ id tvRamInfo
 id tvStorageInfo
 layout activity_main
 style Theme.DroidClean
+xml file_paths

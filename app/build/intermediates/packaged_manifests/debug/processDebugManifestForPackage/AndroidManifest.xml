@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fabrice.droidclean"
-    android:versionCode="1"
-    android:versionName="1.0.0" >
+    android:versionCode="2"
+    android:versionName="1.0.1" >
 
     <uses-sdk
         android:minSdkVersion="26"
@@ -47,6 +47,23 @@
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name="com.fabrice.droidclean.update.UpdateReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.fabrice.droidclean.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="com.fabrice.droidclean.androidx-startup"

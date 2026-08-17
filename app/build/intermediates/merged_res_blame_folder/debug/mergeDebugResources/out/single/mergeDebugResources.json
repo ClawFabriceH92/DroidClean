@@ -14,5 +14,9 @@
     {
         "merged": "com.fabrice.droidclean.app-debug-37:/drawable_bar_bg.xml.flat",
         "source": "com.fabrice.droidclean.app-main-39:/drawable/bar_bg.xml"
+    },
+    {
+        "merged": "com.fabrice.droidclean.app-debug-37:/xml_file_paths.xml.flat",
+        "source": "com.fabrice.droidclean.app-main-39:/xml/file_paths.xml"
     }
 ]
