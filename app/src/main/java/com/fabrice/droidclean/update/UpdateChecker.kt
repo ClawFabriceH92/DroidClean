@@ -1,7 +1,6 @@
 package com.fabrice.droidclean.update
 
 import org.json.JSONArray
-import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -19,20 +18,24 @@ data class UpdateInfo(
 object UpdateChecker {
 
     private const val RELEASES_URL =
-        "https://api.github.com/repos/ClawFabriceH92/DroidClean/releases?per_page=5"
+        "https://api.github.com/repos/ClawFabriceH92/DroidClean/releases?per_page=10"
 
     /**
      * Récupère la version la plus récente disposant d'un APK.
      * Retourne null si aucune release exploitable (ou réseau KO).
      */
     fun latestWithApk(): UpdateInfo? {
-        val conn = URL(RELEASES_URL).openConnection() as HttpURLConnection
+        val conn = try {
+            URL(RELEASES_URL).openConnection() as HttpURLConnection
+        } catch (_: Exception) {
+            return null
+        }
         conn.connectTimeout = 10_000
         conn.readTimeout = 10_000
         conn.setRequestProperty("Accept", "application/vnd.github+json")
         conn.setRequestProperty("User-Agent", "DroidClean-UpdateChecker")
         return try {
-            if (conn.responseCode != 200) return null
+            if (conn.responseCode != HttpURLConnection.HTTP_OK) return null
             val text = conn.inputStream.bufferedReader().use { it.readText() }
             parseReleases(text)
         } catch (_: Exception) {
@@ -48,13 +51,19 @@ object UpdateChecker {
             var best: UpdateInfo? = null
             for (i in 0 until releases.length()) {
                 val rel = releases.getJSONObject(i)
+                // Ni brouillon, ni pré-version : on n'installe que du stable.
                 if (rel.optBoolean("draft")) continue
-                val tag = rel.optString("tag_name", "").removePrefix("v")
+                if (rel.optBoolean("prerelease")) continue
+
+                val tag = rel.optString("tag_name", "").trim().removePrefix("v")
+                // Les releases « flottantes » (tag "latest") n'ont pas de version
+                // comparable : les retenir masquerait la vraie dernière version.
+                if (!isVersion(tag)) continue
+
                 val assets = rel.optJSONArray("assets") ?: continue
                 for (j in 0 until assets.length()) {
                     val asset = assets.getJSONObject(j)
-                    val name = asset.optString("name", "")
-                    if (!name.endsWith(".apk")) continue
+                    if (!asset.optString("name", "").endsWith(".apk")) continue
                     val url = asset.optString("browser_download_url", "")
                     if (url.isEmpty()) continue
                     val info = UpdateInfo(
@@ -73,6 +82,13 @@ object UpdateChecker {
         } catch (_: Exception) {
             null // JSON invalide → pas de mise à jour
         }
+    }
+
+    /** Une version exploitable : au moins un segment, tous numériques. Ex. « 1.2.3 ». */
+    internal fun isVersion(tag: String): Boolean {
+        if (tag.isBlank()) return false
+        val segments = tag.split(".")
+        return segments.all { it.isNotEmpty() && it.all(Char::isDigit) }
     }
 
     /** Compare deux versions "x.y.z" (segments numériques). >0 si a > b. */

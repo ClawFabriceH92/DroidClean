@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Étincelles : « propre comme un sou neuf » -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M52,26 C55,43 63,51 80,54 C63,57 55,65 52,82 C49,65 41,57 24,54 C41,51 49,43 52,26 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M76,28 C77,34 79,36 85,37 C79,38 77,40 76,46 C75,40 73,38 67,37 C73,36 75,34 76,28 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M74,64 C75,69 77,71 82,72 C77,73 75,75 74,80 C73,75 71,73 66,72 C71,71 73,69 74,64 Z" />
+</vector>

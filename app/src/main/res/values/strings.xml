@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DroidClean</string>
+    <string name="app_tagline">Optimisation tout-en-un</string>
+
+    <!-- Nettoyage -->
+    <string name="clean_title">🧹 Nettoyage</string>
+    <string name="clean_subtitle">Vider le dossier Téléchargements et le cache</string>
+    <string name="clean_analyze">Analyser</string>
+    <string name="clean_reanalyze">Ré-analyser</string>
+    <string name="clean_analyzing">Analyse…</string>
+    <string name="clean_action">🧹 Nettoyer</string>
+    <string name="clean_dialog_title">🧹 Nettoyer</string>
+    <string name="clean_dialog_message">Supprimer %1$s du dossier Téléchargements et %2$s de cache ?</string>
+    <string name="clean_detail">Téléchargements : %1$s · Cache : %2$s</string>
+    <string name="clean_freed">✅ %1$s libérés</string>
+    <string name="clean_freed_with_errors">✅ %1$s libérés · %2$d fichier(s) non supprimable(s)</string>
+    <string name="clean_permission_needed">Autorisation de stockage nécessaire pour vider les Téléchargements</string>
+
+    <!-- RAM -->
+    <string name="ram_title">⚡ Mémoire RAM</string>
+    <string name="ram_subtitle">Demande au système de libérer la mémoire en cache</string>
+    <string name="ram_boost">⚡ BOOST RAM</string>
+    <string name="ram_info">Utilisé : %1$s / %2$s (%3$d %%)</string>
+    <string name="ram_freed">⚡ %1$s de RAM libérés</string>
+    <string name="ram_no_change">⚡ Mémoire déjà optimale</string>
+
+    <!-- Batterie -->
+    <string name="battery_title">🔋 Batterie</string>
+    <string name="battery_unavailable">N/A</string>
+    <string name="battery_pct">%1$d %%</string>
+    <string name="battery_temp">%1$s °C</string>
+    <string name="battery_health_good">✅ Bonne</string>
+    <string name="battery_health_overheat">🔥 Surchauffe</string>
+    <string name="battery_health_dead">💀 Défunte</string>
+    <string name="battery_health_over_voltage">⚠️ Tension</string>
+    <string name="battery_health_cold">❄️ Trop froide</string>
+    <string name="battery_health_unknown">?</string>
+    <string name="battery_charging_usb">🔌 Charge USB</string>
+    <string name="battery_charging_ac">⚡ Charge secteur</string>
+    <string name="battery_charging_wireless">🌀 Charge sans fil</string>
+    <string name="battery_charging">🔌 En charge</string>
+    <string name="battery_discharging">📉 Décharge</string>
+    <string name="battery_full">✅ Pleine</string>
+    <string name="battery_not_charging">🔋 Pas en charge</string>
+
+    <!-- Stockage -->
+    <string name="storage_title">💾 Stockage</string>
+    <string name="storage_info">Utilisé : %1$s / %2$s (%3$d %%)</string>
+    <string name="storage_unavailable">Stockage indisponible</string>
+    <string name="storage_open_downloads">📂 Ouvrir les téléchargements</string>
+    <string name="storage_no_file_manager">Aucun gestionnaire de fichiers trouvé</string>
+
+    <!-- Applications -->
+    <string name="apps_title">📱 Applications</string>
+    <string name="apps_info">📱 %1$d utilisateur · ⚙️ %2$d système · %3$d total</string>
+    <string name="apps_manage">⚙️ Gérer les applications</string>
+    <string name="apps_settings_unavailable">Écran des applications indisponible</string>
+
+    <!-- Mises à jour -->
+    <string name="update_title">⬆ Mises à jour</string>
+    <string name="update_auto">Mise à jour automatique</string>
+    <string name="update_check_now">Vérifier maintenant</string>
+    <string name="update_checking">Vérification…</string>
+    <string name="update_up_to_date">Vous êtes à jour (v%1$s)</string>
+    <string name="update_available">Version %1$s disponible — téléchargement en Wi-Fi</string>
+    <string name="update_check_failed">Vérification impossible (réseau ?)</string>
+    <string name="update_channel_name">Mises à jour</string>
+    <string name="update_channel_description">Mises à jour automatiques de DroidClean</string>
+    <string name="update_notif_permission_title">⬆ Mise à jour DroidClean v%1$s disponible</string>
+    <string name="update_notif_permission_text">Touchez pour autoriser l\'installation, puis la mise à jour se fera automatiquement.</string>
+    <string name="update_notif_ready_title">⬆ Mise à jour DroidClean prête</string>
+    <string name="update_notif_ready_text">Touchez pour installer la nouvelle version.</string>
+
+    <!-- Divers -->
+    <string name="placeholder">…</string>
+    <string name="cancel">Annuler</string>
+    <string name="footer_version">DroidClean v%1$s</string>
+</resources>
