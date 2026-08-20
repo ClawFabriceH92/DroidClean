@@ -1,41 +1,45 @@
 package com.fabrice.droidclean.update
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
-import androidx.core.app.NotificationCompat
-import kotlinx.coroutines.CoroutineScope
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 /**
- * Boucle de mise à jour automatique (pattern validé Vigie, générique).
- * - Vérification immédiate au lancement
- * - Puis créneau quotidien à 14h00 (boucle légère toutes les 30 s)
- * - Téléchargement auto si permission "installer des apps inconnues" OK,
- *   sinon notification avec action vers l'écran d'autorisation.
- * - Activable/désactivable via SharedPreferences ("autoUpdate", défaut true).
+ * Mise à jour automatique depuis GitHub Releases.
+ *
+ * La vérification périodique est confiée à WorkManager (une fois par jour, quand
+ * le réseau est disponible) : contrairement à une boucle de coroutine, elle
+ * survit à la mort du process, respecte le Doze et ne réveille pas l'appareil
+ * toutes les 30 secondes.
  */
 object UpdateManager {
 
     private const val PREFS = "droidcleanupdate"
     private const val KEY_AUTO = "autoUpdate"
-    private const val CHANNEL_ID = "com.fabrice.droidclean.updates"
-    private const val TAG = "DroidCleanUpdate"
+    private const val WORK_NAME = "droidclean-daily-update-check"
 
-    private var started = false
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    /**
+     * Renseigné par l'activité : un démarrage d'activité en arrière-plan étant
+     * bloqué depuis Android 10, on sait ainsi s'il faut installer directement
+     * ou passer par une notification.
+     */
+    @Volatile
+    var appInForeground: Boolean = false
+
+    /** Résultat d'une vérification, pour retour à l'utilisateur. */
+    sealed interface CheckResult {
+        data class UpToDate(val current: String) : CheckResult
+        data class Downloading(val version: String) : CheckResult
+        data class PermissionNeeded(val version: String) : CheckResult
+        data object Failed : CheckResult
+    }
 
     fun autoUpdateEnabled(context: Context): Boolean =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_AUTO, true)
@@ -43,91 +47,67 @@ object UpdateManager {
     fun setAutoUpdate(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .edit().putBoolean(KEY_AUTO, enabled).apply()
+        val appContext = context.applicationContext
+        if (enabled) schedulePeriodicCheck(appContext) else cancelPeriodicCheck(appContext)
     }
 
     /** À appeler une fois depuis le onCreate de l'activité principale. */
     fun start(context: Context) {
-        if (started) return
-        started = true
         val appContext = context.applicationContext
-        ensureChannel(appContext)
-        scope.launch {
-            // Vérification immédiate au lancement
-            if (autoUpdateEnabled(appContext)) checkOnce(appContext)
-            while (isActive) {
-                val now = Calendar.getInstance()
-                if (autoUpdateEnabled(appContext) &&
-                    now.get(Calendar.HOUR_OF_DAY) == 14 && now.get(Calendar.MINUTE) == 0
-                ) {
-                    checkOnce(appContext)
-                    delay(61_000) // évite les doubles déclenchements dans la même minute
-                } else {
-                    delay(30_000)
-                }
-            }
+        UpdateNotifier.ensureChannel(appContext)
+        if (autoUpdateEnabled(appContext)) {
+            schedulePeriodicCheck(appContext)
+        } else {
+            cancelPeriodicCheck(appContext)
         }
     }
 
-    /** Vérifie GitHub Releases et télécharge si une MAJ existe. Peut être appelé par un bouton "Vérifier maintenant". */
-    fun checkNow(context: Context) {
-        checkOnce(context.applicationContext)
-    }
-
-    private fun checkOnce(context: Context) {
-        scope.launch {
-            val info = withContext(Dispatchers.IO) { UpdateChecker.latestWithApk() } ?: return@launch
-            val current = currentVersion(context)
-            if (UpdateChecker.compareVersions(info.versionName, current) <= 0) return@launch
-            if (AutoUpdater.canRequestInstalls(context)) {
-                AutoUpdater.download(context, info.downloadUrl)
-            } else {
-                notifyPermissionNeeded(context, info)
-            }
-        }
-    }
-
-    private fun currentVersion(context: Context): String = try {
-        context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: ""
-    } catch (_: PackageManager.NameNotFoundException) {
-        ""
-    }
-
-    private fun ensureChannel(context: Context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.createNotificationChannel(
-            NotificationChannel(
-                CHANNEL_ID,
-                "Mises à jour",
-                NotificationManager.IMPORTANCE_HIGH,
-            ).apply { description = "Mises à jour automatiques de DroidClean" }
+    private fun schedulePeriodicCheck(context: Context) {
+        val request = PeriodicWorkRequestBuilder<UpdateWorker>(1, TimeUnit.DAYS)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .build()
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            request,
         )
     }
 
-    /** Notification : MAJ dispo mais il faut d'abord autoriser l'installation. */
-    private fun notifyPermissionNeeded(context: Context, info: UpdateInfo) {
-        try {
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val settingsIntent = Intent(
-                Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
-                Uri.parse("package:${context.packageName}"),
-            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            val pi = android.app.PendingIntent.getActivity(
-                context,
-                0,
-                settingsIntent,
-                android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE,
-            )
-            val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                .setContentTitle("⬆ Mise à jour DroidClean v${info.versionName} disponible")
-                .setContentText("Touchez pour autoriser l'installation, puis la mise à jour s'installera automatiquement.")
-                .setContentIntent(pi)
-                .setAutoCancel(true)
-                .build()
-            nm.notify(1001, notification)
-        } catch (_: Exception) {
-            // Notification impossible → on laisse tomber silencieusement
+    private fun cancelPeriodicCheck(context: Context) {
+        WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
+    }
+
+    /**
+     * Vérifie GitHub Releases et déclenche le téléchargement s'il y a mieux
+     * que la version installée. Suspend : appelable depuis l'UI comme depuis le worker.
+     */
+    suspend fun check(context: Context): CheckResult {
+        val appContext = context.applicationContext
+        val current = currentVersion(appContext)
+        val info = withContext(Dispatchers.IO) { UpdateChecker.latestWithApk() }
+            ?: return CheckResult.Failed
+
+        if (UpdateChecker.compareVersions(info.versionName, current) <= 0) {
+            return CheckResult.UpToDate(current)
         }
+        if (!AutoUpdater.canRequestInstalls(appContext)) {
+            UpdateNotifier.notifyPermissionNeeded(appContext, info)
+            return CheckResult.PermissionNeeded(info.versionName)
+        }
+        return if (AutoUpdater.download(appContext, info.downloadUrl)) {
+            CheckResult.Downloading(info.versionName)
+        } else {
+            CheckResult.Failed
+        }
+    }
+
+    fun currentVersion(context: Context): String = try {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: ""
+    } catch (_: PackageManager.NameNotFoundException) {
+        ""
     }
 }

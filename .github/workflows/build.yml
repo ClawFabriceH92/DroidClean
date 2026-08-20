@@ -1,19 +1,25 @@
 # Workflow GitHub Actions Android — build APK + release automatique
-# - push sur main  → build assembleRelease signé + publication release "latest" (écrasée à chaque push)
-# - tag v*         → build + release versionnée (tag_name) avec APK renommé droidclean-v<version>.apk
-# - workflow_dispatch → build manuel
+# - push sur n'importe quelle branche → tests + lint + build (APK en artefact)
+# - push sur main                     → publication de la release flottante "latest"
+# - tag v*                            → release versionnée, version dérivée du tag
+# - workflow_dispatch                 → build manuel
+#
 # Signature stable : keystore release stocké en secrets GitHub (DROIDCLEAN_KEYSTORE_*) —
 # indispensable pour les mises à jour automatiques de l'app (même clé à chaque build).
 name: Build APK
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
     tags: ["v*"]
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -32,6 +38,9 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Set up Gradle (avec cache)
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Install Android SDK 35
         run: |
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
@@ -41,17 +50,44 @@ jobs:
           yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
           "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.1"
 
+      # Sur un tag v1.2.3, la version de l'APK est 1.2.3 : plus besoin de penser
+      # à éditer build.gradle.kts avant de taguer.
+      - name: Déterminer la version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "GRADLE_VERSION_ARG=-PdroidcleanVersionName=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "GRADLE_VERSION_ARG=" >> "$GITHUB_ENV"
+          fi
+
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --no-daemon
+        run: ./gradlew testDebugUnitTest $GRADLE_VERSION_ARG
+
+      - name: Lint (rapport non bloquant)
+        run: ./gradlew lintRelease $GRADLE_VERSION_ARG
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-release.html
+          if-no-files-found: ignore
 
       - name: Build signed release APK
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleRelease $GRADLE_VERSION_ARG
+
+      - name: Nommer l'APK
+        run: |
+          VER=$(./gradlew -q --console=plain $GRADLE_VERSION_ARG printVersionName | tail -1)
+          echo "APP_VERSION=$VER" >> "$GITHUB_ENV"
+          cp app/build/outputs/apk/release/app-release.apk "droidclean-v${VER}.apk"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: app/build/outputs/apk/release/app-release.apk
+          name: droidclean-apk
+          path: droidclean-v*.apk
           if-no-files-found: error
 
       - name: Publish "latest" release (push on main)
@@ -59,13 +95,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VER=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts | head -1)
-          cp app/build/outputs/apk/release/app-release.apk "droidclean-v${VER}.apk"
-          gh release delete latest --yes --repo "${{ github.repository }}" 2>/dev/null || true
+          # --cleanup-tag : sans ça, le tag "latest" resterait figé sur un ancien commit.
+          gh release delete latest --yes --cleanup-tag --repo "${{ github.repository }}" 2>/dev/null || true
           for i in 1 2 3 4 5; do
-            if gh release create latest "droidclean-v${VER}.apk" \
+            if gh release create latest "droidclean-v${APP_VERSION}.apk" \
               --title "Latest build" \
-              --notes "APK le plus récent — build automatique du push sur main (signé, mise à jour automatique possible)." \
+              --target "$GITHUB_SHA" \
+              --notes "APK le plus récent — build automatique du push sur main (signé). Les mises à jour automatiques de l'app ne suivent que les releases versionnées (tags v*)." \
               --repo "${{ github.repository }}"; then
               break
             fi
@@ -78,11 +114,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VER=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts | head -1)
-          cp app/build/outputs/apk/release/app-release.apk "droidclean-v${VER}.apk"
-          gh release create "$GITHUB_REF_NAME" "droidclean-v${VER}.apk" \
+          gh release create "$GITHUB_REF_NAME" "droidclean-v${APP_VERSION}.apk" \
             --title "$GITHUB_REF_NAME" \
-            --notes "Build automatique — APK $GITHUB_REF_NAME (signé, mise à jour automatique possible)." \
+            --notes "Build automatique — APK $GITHUB_REF_NAME (signé, mise à jour automatique)." \
             --repo "${{ github.repository }}" \
-            || gh release upload "$GITHUB_REF_NAME" "droidclean-v${VER}.apk" \
+            || gh release upload "$GITHUB_REF_NAME" "droidclean-v${APP_VERSION}.apk" \
                --clobber --repo "${{ github.repository }}"

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/screen_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,29 +14,22 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="DroidClean"
+            android:text="@string/app_name"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#1A73E8"
+            android:textColor="@color/brand"
             android:layout_marginBottom="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Optimisation tout-en-un"
+            android:text="@string/app_tagline"
             android:textSize="14sp"
-            android:textColor="#666666"
+            android:textColor="@color/text_tertiary"
             android:layout_marginBottom="20dp" />
 
         <!-- === CARTE NETTOYAGE === -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp">
+        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -52,30 +44,27 @@
                     android:gravity="center_vertical">
 
                     <TextView
+                        style="@style/CardTitle"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="🧹 Nettoyage"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="#333333" />
+                        android:text="@string/clean_title" />
 
                     <TextView
                         android:id="@+id/tvCleanSize"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="..."
+                        android:text="@string/placeholder"
                         android:textSize="16sp"
-                        android:textColor="#1A73E8"
+                        android:textColor="@color/brand"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Vider le dossier Téléchargements et le cache"
+                    android:text="@string/clean_subtitle"
                     android:textSize="13sp"
-                    android:textColor="#888888"
+                    android:textColor="@color/text_hint"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="12dp" />
 
@@ -86,12 +75,12 @@
 
                     <Button
                         android:id="@+id/btnAnalyzeClean"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="0dp"
                         android:layout_height="42dp"
                         android:layout_weight="1"
                         android:layout_marginEnd="6dp"
-                        android:text="Analyser"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        android:text="@string/clean_analyze" />
 
                     <Button
                         android:id="@+id/btnClean"
@@ -99,21 +88,14 @@
                         android:layout_height="42dp"
                         android:layout_weight="1"
                         android:layout_marginStart="6dp"
-                        android:text="🧹 Nettoyer"
+                        android:text="@string/clean_action"
                         android:enabled="false" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- === CARTE RAM === -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp">
+        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -122,40 +104,39 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⚡ Mémoire RAM"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333" />
+                    style="@style/CardTitle"
+                    android:text="@string/ram_title" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Libérez de la mémoire en arrêtant les applis inutiles"
+                    android:text="@string/ram_subtitle"
                     android:textSize="13sp"
-                    android:textColor="#888888"
+                    android:textColor="@color/text_hint"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="8dp" />
 
-                <!-- Barre RAM -->
+                <!-- Barre RAM (poids proportionnels, indépendants de la densité) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
                     android:orientation="horizontal"
                     android:background="@drawable/bar_bg"
+                    android:weightSum="100"
                     android:layout_marginBottom="8dp">
 
                     <View
                         android:id="@+id/ramUsedBar"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="0"
                         android:background="@drawable/bar_used" />
 
                     <View
                         android:id="@+id/ramFreeBar"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="100"
                         android:background="@drawable/bar_free" />
                 </LinearLayout>
 
@@ -163,28 +144,21 @@
                     android:id="@+id/tvRamInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="..."
+                    android:text="@string/placeholder"
                     android:textSize="14sp"
-                    android:textColor="#555555"
+                    android:textColor="@color/text_secondary"
                     android:layout_marginBottom="8dp" />
 
                 <Button
                     android:id="@+id/btnBoost"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
-                    android:text="⚡ BOOST RAM" />
+                    android:text="@string/ram_boost" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- === CARTE BATTERIE === -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp">
+        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -193,12 +167,8 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🔋 Batterie"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333" />
+                    style="@style/CardTitle"
+                    android:text="@string/battery_title" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -211,10 +181,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="..."
+                        android:text="@string/placeholder"
                         android:textSize="36sp"
                         android:textStyle="bold"
-                        android:textColor="#34A853" />
+                        android:textColor="@color/battery_ok" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -226,17 +196,17 @@
                             android:id="@+id/tvBatteryTemp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="..."
+                            android:text="@string/placeholder"
                             android:textSize="14sp"
-                            android:textColor="#666666" />
+                            android:textColor="@color/text_tertiary" />
 
                         <TextView
                             android:id="@+id/tvBatteryHealth"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="..."
+                            android:text="@string/placeholder"
                             android:textSize="14sp"
-                            android:textColor="#666666" />
+                            android:textColor="@color/text_tertiary" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -244,22 +214,14 @@
                     android:id="@+id/tvBatteryStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
                     android:textSize="13sp"
-                    android:textColor="#888888"
+                    android:textColor="@color/text_hint"
                     android:layout_marginTop="4dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- === CARTE STOCKAGE === -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp">
+        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -268,20 +230,16 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="💾 Stockage"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333" />
+                    style="@style/CardTitle"
+                    android:text="@string/storage_title" />
 
                 <TextView
                     android:id="@+id/tvStorageInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="..."
+                    android:text="@string/placeholder"
                     android:textSize="14sp"
-                    android:textColor="#555555"
+                    android:textColor="@color/text_secondary"
                     android:layout_marginTop="8dp" />
 
                 <!-- Barre stockage -->
@@ -290,40 +248,36 @@
                     android:layout_height="20dp"
                     android:orientation="horizontal"
                     android:background="@drawable/bar_bg"
+                    android:weightSum="100"
                     android:layout_marginTop="8dp">
 
                     <View
                         android:id="@+id/storageUsedBar"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="0"
                         android:background="@drawable/bar_used" />
 
                     <View
                         android:id="@+id/storageFreeBar"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_weight="100"
                         android:background="@drawable/bar_free" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/btnOpenDownloads"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
                     android:layout_marginTop="8dp"
-                    android:text="📂 Ouvrir les téléchargements"
-                    style="@style/Widget.MaterialComponents.Button.TextButton" />
+                    android:text="@string/storage_open_downloads" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- === CARTE APPLICATIONS === -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp">
+        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -332,39 +286,66 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📱 Applications"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333" />
+                    style="@style/CardTitle"
+                    android:text="@string/apps_title" />
 
                 <TextView
                     android:id="@+id/tvAppsInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="..."
+                    android:text="@string/placeholder"
                     android:textSize="14sp"
-                    android:textColor="#555555"
+                    android:textColor="@color/text_secondary"
                     android:layout_marginTop="8dp" />
 
                 <Button
                     android:id="@+id/btnAppSettings"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
                     android:layout_marginTop="8dp"
-                    android:text="⚙️ Gérer les applications"
-                    style="@style/Widget.MaterialComponents.Button.TextButton" />
+                    android:text="@string/apps_manage" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- === CARTE MISES À JOUR === -->
+        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    style="@style/CardTitle"
+                    android:text="@string/update_title" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/swAutoUpdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/update_auto"
+                    android:textColor="@color/text_secondary" />
+
+                <Button
+                    android:id="@+id/btnCheckUpdate"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/update_check_now" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Footer -->
         <TextView
+            android:id="@+id/tvFooter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DroidClean v1.0.0"
             android:textSize="12sp"
-            android:textColor="#AAAAAA"
+            android:textColor="@color/text_footer"
             android:gravity="center"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp" />

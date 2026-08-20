@@ -1,7 +1,9 @@
 package com.fabrice.droidclean.update
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class UpdateCheckerTest {
@@ -15,16 +17,26 @@ class UpdateCheckerTest {
 
     @Test
     fun `compareVersions - plus récent`() {
-        assert(UpdateChecker.compareVersions("0.3.0", "0.2.0") > 0)
-        assert(UpdateChecker.compareVersions("1.0.0", "0.9.9") > 0)
-        assert(UpdateChecker.compareVersions("0.10.0", "0.9.0") > 0)
-        assert(UpdateChecker.compareVersions("0.2.10", "0.2.9") > 0)
+        assertTrue(UpdateChecker.compareVersions("0.3.0", "0.2.0") > 0)
+        assertTrue(UpdateChecker.compareVersions("1.0.0", "0.9.9") > 0)
+        assertTrue(UpdateChecker.compareVersions("0.10.0", "0.9.0") > 0)
+        assertTrue(UpdateChecker.compareVersions("0.2.10", "0.2.9") > 0)
     }
 
     @Test
     fun `compareVersions - plus ancien`() {
-        assert(UpdateChecker.compareVersions("0.2.0", "0.3.0") < 0)
-        assert(UpdateChecker.compareVersions("0.9.9", "1.0.0") < 0)
+        assertTrue(UpdateChecker.compareVersions("0.2.0", "0.3.0") < 0)
+        assertTrue(UpdateChecker.compareVersions("0.9.9", "1.0.0") < 0)
+    }
+
+    @Test
+    fun `isVersion - seules les versions numériques comptent`() {
+        assertTrue(UpdateChecker.isVersion("1.0.1"))
+        assertTrue(UpdateChecker.isVersion("2"))
+        assertFalse(UpdateChecker.isVersion("latest"))
+        assertFalse(UpdateChecker.isVersion(""))
+        assertFalse(UpdateChecker.isVersion("1.0.0-beta"))
+        assertFalse(UpdateChecker.isVersion("1..0"))
     }
 
     @Test
@@ -53,6 +65,47 @@ class UpdateCheckerTest {
             [
               {"tag_name": "v9.9.9", "draft": true,
                "assets": [{"name": "droidclean-v9.9.9.apk", "browser_download_url": "https://x/9.9.9.apk"}]}
+            ]
+        """.trimIndent()
+        assertNull(UpdateChecker.parseReleases(json))
+    }
+
+    @Test
+    fun `parseReleases - ignore les pré-versions`() {
+        val json = """
+            [
+              {"tag_name": "v9.9.9", "draft": false, "prerelease": true,
+               "assets": [{"name": "droidclean-v9.9.9.apk", "browser_download_url": "https://x/9.9.9.apk"}]},
+              {"tag_name": "v1.0.0", "draft": false, "prerelease": false,
+               "assets": [{"name": "droidclean-v1.0.0.apk", "browser_download_url": "https://x/1.0.0.apk"}]}
+            ]
+        """.trimIndent()
+        assertEquals("1.0.0", UpdateChecker.parseReleases(json)?.versionName)
+    }
+
+    @Test
+    fun `parseReleases - ignore la release flottante latest`() {
+        // La CI publie une release "latest" écrasée à chaque push sur main :
+        // son tag n'est pas une version, elle ne doit jamais être proposée.
+        val json = """
+            [
+              {"tag_name": "latest", "draft": false,
+               "assets": [{"name": "droidclean-v1.0.1.apk", "browser_download_url": "https://x/latest.apk"}]},
+              {"tag_name": "v1.0.0", "draft": false,
+               "assets": [{"name": "droidclean-v1.0.0.apk", "browser_download_url": "https://x/1.0.0.apk"}]}
+            ]
+        """.trimIndent()
+        val info = UpdateChecker.parseReleases(json)
+        assertEquals("1.0.0", info?.versionName)
+        assertEquals("https://x/1.0.0.apk", info?.downloadUrl)
+    }
+
+    @Test
+    fun `parseReleases - ignore les releases sans APK`() {
+        val json = """
+            [
+              {"tag_name": "v2.0.0", "draft": false,
+               "assets": [{"name": "sources.zip", "browser_download_url": "https://x/sources.zip"}]}
             ]
         """.trimIndent()
         assertNull(UpdateChecker.parseReleases(json))
