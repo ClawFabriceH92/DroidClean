@@ -34,6 +34,7 @@ import com.fabrice.droidclean.ui.Categories
 import com.fabrice.droidclean.ui.JunkActivity
 import com.fabrice.droidclean.ui.MainIntent
 import com.fabrice.droidclean.ui.Ui
+import com.fabrice.droidclean.update.ApkVerifier
 import com.fabrice.droidclean.update.AutoUpdater
 import com.fabrice.droidclean.update.UpdateInfo
 import com.fabrice.droidclean.update.UpdateManager
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     private var installMode = false
     private var apkFingerprint: String? = null
     private var readyInstallIntent: Intent? = null
+    private var apkVerdict: ApkVerifier.Verdict? = null
 
     private val notificationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { /* informatif */ }
@@ -540,8 +542,21 @@ class MainActivity : AppCompatActivity() {
             showDownloadProgress(progress)
             return
         }
-        val ready = withContext(Dispatchers.IO) { cachedInstallIntent() }
-        if (ready != null) showReadyToInstall(ready) else showCheckButton()
+        withContext(Dispatchers.IO) { refreshApkCache() }
+        val ready = readyInstallIntent
+        when {
+            ready != null -> showReadyToInstall(ready)
+            // Cas concret : APK produit par une CI sans secrets de signature.
+            // Android refuserait de l'installer ; autant le dire ici.
+            apkVerdict == ApkVerifier.Verdict.WRONG_SIGNATURE -> showSignatureError()
+            else -> showCheckButton()
+        }
+    }
+
+    private fun showSignatureError() {
+        binding.progressUpdate.visibility = View.GONE
+        binding.tvUpdateStatus.setText(R.string.update_signature_error)
+        showCheckButton()
     }
 
     private fun showDownloadProgress(progress: AutoUpdater.Progress) {
@@ -578,19 +593,23 @@ class MainActivity : AppCompatActivity() {
      * question de le refaire à chaque seconde de la boucle. Le résultat n'est
      * recalculé que si le fichier a changé de taille ou de date.
      */
-    private fun cachedInstallIntent(): Intent? {
+    private fun refreshApkCache() {
         val file = AutoUpdater.apkFile(applicationContext)
         if (!file.isFile) {
             apkFingerprint = null
             readyInstallIntent = null
-            return null
+            apkVerdict = null
+            return
         }
         val fingerprint = "${file.length()}:${file.lastModified()}"
-        if (fingerprint != apkFingerprint) {
-            apkFingerprint = fingerprint
-            readyInstallIntent = AutoUpdater.installIntent(applicationContext)
+        if (fingerprint == apkFingerprint) return
+        apkFingerprint = fingerprint
+        apkVerdict = ApkVerifier.verify(applicationContext, file)
+        readyInstallIntent = if (apkVerdict == ApkVerifier.Verdict.OK) {
+            AutoUpdater.installIntent(applicationContext)
+        } else {
+            null
         }
-        return readyInstallIntent
     }
 
     // ------------------------------------------------------------------ divers
