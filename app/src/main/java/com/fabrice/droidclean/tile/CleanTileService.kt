@@ -24,6 +24,11 @@ class CleanTileService : TileService() {
         updateTile()
     }
 
+    // La surcharge Intent lève une exception dès qu'on cible Android 14+, d'où
+    // l'avertissement de lint. Elle reste pourtant la seule disponible en dessous,
+    // et cette branche ne s'exécute que là : la version PendingIntent n'existe qu'à
+    // partir de l'API 34.
+    @Suppress("DEPRECATION", "StartActivityAndCollapseDeprecated")
     override fun onClick() {
         super.onClick()
         val intent = MainIntent.of(this, startScan = true)
@@ -37,7 +42,6 @@ class CleanTileService : TileService() {
                 )
             )
         } else {
-            @Suppress("DEPRECATION")
             startActivityAndCollapse(intent)
         }
     }

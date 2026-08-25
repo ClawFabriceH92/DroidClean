@@ -5,6 +5,8 @@ import android.content.Context
 import android.media.MediaScannerConnection
 import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.ChecksSdkIntAtLeast
+import androidx.annotation.RequiresApi
 import java.io.File
 
 /**
@@ -23,6 +25,7 @@ internal object Trash {
     /** Nombre maximum de chemins par requête : au-delà, SQLite refuse le `IN (...)`. */
     private const val BATCH = 200
 
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
     fun isSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
     /**
@@ -30,12 +33,17 @@ internal object Trash {
      * réellement arrivés. Les autres restent à supprimer normalement.
      */
     fun trash(context: Context, files: List<File>): Set<String> {
-        if (!isSupported() || files.isEmpty()) return emptySet()
+        if (files.isEmpty()) return emptySet()
+        // Contrôle de version écrit ici plutôt que délégué à isSupported() : lint
+        // ne suit pas un garde d'API à travers un appel de fonction, et refuserait
+        // la compilation en signalant une API trop récente.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return emptySet()
         val done = HashSet<String>()
         files.chunked(BATCH).forEach { batch -> done += trashBatch(context, batch) }
         return done
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun trashBatch(context: Context, files: List<File>): Set<String> {
         val resolver = context.contentResolver
         val collection = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL)
