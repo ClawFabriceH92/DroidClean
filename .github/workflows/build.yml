@@ -31,7 +31,7 @@ jobs:
       DROIDCLEAN_KEY_PASSWORD: ${{ secrets.DROIDCLEAN_KEY_PASSWORD }}
       DROIDCLEAN_KEY_ALIAS: ${{ secrets.DROIDCLEAN_KEY_ALIAS }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
