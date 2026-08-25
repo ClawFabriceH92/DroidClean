@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DroidClean</string>
+    <string name="app_tagline">All-in-one optimisation</string>
+    <string name="placeholder">…</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="footer_version">DroidClean v%1$s</string>
+
+    <string name="unit_bytes">B</string>
+    <string name="unit_kilobytes">KB</string>
+    <string name="unit_megabytes">MB</string>
+    <string name="unit_gigabytes">GB</string>
+    <string name="unit_terabytes">TB</string>
+
+    <string name="permission_title">Storage access required</string>
+    <string name="permission_message">Without “All files access”, DroidClean can only clear its own caches. This permission is used solely to read and delete the files you select; nothing is sent anywhere.</string>
+    <string name="permission_grant">Allow</string>
+    <string name="permission_denied">Permission denied: only the app\'s own caches can be cleared.</string>
+
+    <string name="crash_title">A crash was detected</string>
+    <string name="crash_message">DroidClean closed unexpectedly. The report stayed on your device; sharing it is entirely your call.</string>
+    <string name="crash_share">Share report</string>
+    <string name="crash_dismiss">Dismiss</string>
+    <string name="crash_subject">DroidClean crash report</string>
+    <string name="crash_no_app">No app can share plain text.</string>
+
+    <string name="clean_title">🧹 Cleanup</string>
+    <string name="clean_subtitle">Caches, leftovers and the files you pick</string>
+    <string name="clean_analyze">Scan and choose</string>
+    <string name="clean_quick">Quick clean (caches)</string>
+    <string name="clean_not_analyzed">Not scanned yet</string>
+    <string name="clean_analyzing">Scanning…</string>
+    <string name="clean_history_month">%1$s freed this month</string>
+    <string name="clean_history_none">No cleanup this month</string>
+    <string name="clean_freed">%1$s freed</string>
+    <string name="clean_trashed">%1$s moved to the bin (recoverable for ~30 days)</string>
+    <string name="clean_failed">%1$d item(s) could not be deleted</string>
+    <string name="clean_nothing">Nothing to clean</string>
+
+    <string name="junk_title">Cleanable items</string>
+    <string name="junk_scanning">Scanning storage…</string>
+    <string name="junk_empty">Nothing to clean here. Your storage is already tidy.</string>
+    <string name="junk_summary">%1$s selected out of %2$s found</string>
+    <string name="junk_nothing_selected">No item selected</string>
+    <string name="junk_selection">%1$d item(s) — %2$s</string>
+    <string name="junk_clean_selected">Clean selection</string>
+    <string name="junk_select_all">Select all</string>
+    <string name="junk_select_none">Deselect all</string>
+    <string name="junk_filter_old">Older than 30 days</string>
+    <string name="junk_filter_big">Over 10 MB</string>
+    <string name="junk_filter_safe">Safe only</string>
+    <string name="junk_item_meta">%1$s · modified %2$d d ago</string>
+    <string name="junk_item_meta_unknown">%1$s</string>
+    <string name="junk_item_meta_today">%1$s · modified today</string>
+    <string name="junk_confirm_title">Confirm cleanup</string>
+    <string name="junk_confirm_message">%1$d item(s), %2$s in total.\n\nCaches are deleted permanently. Your documents go to the system bin, where they stay recoverable for about 30 days.</string>
+    <string name="junk_confirm_message_no_trash">%1$d item(s), %2$s in total.\n\nThis deletion is permanent: the bin is disabled in settings.</string>
+    <string name="junk_confirm_action">Clean</string>
+    <string name="junk_category_header">%1$s — %2$s</string>
+
+    <string name="category_downloads">Downloads</string>
+    <string name="category_app_cache">DroidClean cache</string>
+    <string name="category_app_media_cache">App caches</string>
+    <string name="category_leftover">Leftovers from uninstalled apps</string>
+    <string name="category_thumbnails">Thumbnails</string>
+    <string name="category_lost_dir">Recovered fragments (LOST.DIR)</string>
+    <string name="category_empty_dir">Empty folders</string>
+
+    <string name="storage_title">💾 Storage</string>
+    <string name="storage_info">Used: %1$s / %2$s (%3$d%%)</string>
+    <string name="storage_unavailable">Storage unavailable</string>
+    <string name="storage_volume_line">%1$s: %2$s free of %3$s</string>
+    <string name="storage_volume_default">SD card</string>
+    <string name="storage_open_downloads">Open downloads</string>
+    <string name="storage_analyze">Analyse space</string>
+    <string name="storage_no_file_manager">No file manager found</string>
+
+    <string name="analyze_largest">Large files</string>
+    <string name="analyze_duplicates">Duplicates</string>
+    <string name="analyze_scanning">Scanning… this may take a moment.</string>
+    <string name="analyze_summary_largest">%1$d file(s) over 5 MB — %2$s in total</string>
+    <string name="analyze_summary_duplicates">%1$d duplicate group(s) — %2$s recoverable</string>
+    <string name="analyze_empty_largest">No file larger than 5 MB.</string>
+    <string name="analyze_empty_duplicates">No duplicates found.</string>
+    <string name="analyze_needs_permission">This analysis requires shared storage access.</string>
+    <string name="analyze_group_header">%1$d copies of %2$s — %3$s recoverable</string>
+    <string name="analyze_delete">Delete this file</string>
+    <string name="analyze_deleted">%1$s freed</string>
+    <string name="analyze_delete_failed">Could not delete.</string>
+
+    <string name="apps_title">📱 Apps</string>
+    <string name="apps_info">%1$d app(s) installed · %2$d system</string>
+    <string name="apps_manage">Manage apps</string>
+    <string name="apps_storage">App storage</string>
+    <string name="apps_settings_unavailable">App settings screen unavailable</string>
+    <string name="apps_sort_size">Size</string>
+    <string name="apps_sort_unused">Unused</string>
+    <string name="apps_sort_name">Name</string>
+    <string name="apps_show_system">System apps</string>
+    <string name="apps_usage_needed">Real app sizes require usage access. It stays on the device.</string>
+    <string name="apps_usage_grant">Grant access</string>
+    <string name="apps_usage_unavailable">Usage access screen unavailable</string>
+    <string name="apps_summary">%1$d app(s) — %2$s in total</string>
+    <string name="apps_detail_used">%1$s + %2$s data · used %3$d d ago</string>
+    <string name="apps_detail_never">%1$s + %2$s data · not used recently</string>
+    <string name="apps_action_info">App info</string>
+    <string name="apps_action_uninstall">Uninstall</string>
+    <string name="apps_uninstall_unavailable">This app cannot be uninstalled.</string>
+
+    <string name="ram_title">⚡ Memory</string>
+    <string name="ram_info">Used: %1$s / %2$s (%3$d%%)</string>
+    <string name="ram_low">⚠️ The system reports low memory.</string>
+    <string name="ram_note">Android manages memory on its own: a “freed” app is relaunched later, costing more battery than it saves. This card informs, it does not act.</string>
+    <string name="ram_unavailable">Memory unavailable</string>
+
+    <string name="battery_title">🔋 Battery</string>
+    <string name="battery_unavailable">N/A</string>
+    <string name="battery_pct">%1$d%%</string>
+    <string name="battery_temp">%1$s °C</string>
+    <string name="battery_health_good">✅ Good</string>
+    <string name="battery_health_overheat">🔥 Overheating</string>
+    <string name="battery_health_dead">💀 Dead</string>
+    <string name="battery_health_over_voltage">⚠️ Over voltage</string>
+    <string name="battery_health_cold">❄️ Too cold</string>
+    <string name="battery_health_unknown">Health unknown</string>
+    <string name="battery_charging_usb">🔌 Charging over USB</string>
+    <string name="battery_charging_ac">⚡ Charging from mains</string>
+    <string name="battery_charging_wireless">🌀 Charging wirelessly</string>
+    <string name="battery_charging">🔌 Charging</string>
+    <string name="battery_discharging">📉 Discharging</string>
+    <string name="battery_full">✅ Full</string>
+    <string name="battery_not_charging">🔋 Not charging</string>
+    <string name="battery_detail_voltage">%1$s V</string>
+    <string name="battery_detail_capacity">%1$d mAh</string>
+    <string name="battery_detail_cycles">%1$d cycles</string>
+    <string name="battery_detail_charge_time">full in %1$d min</string>
+
+    <string name="update_title">⬆ Updates</string>
+    <string name="update_auto">Check daily</string>
+    <string name="update_check_now">Check now</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_idle">Not checked since launch</string>
+    <string name="update_up_to_date">Up to date (v%1$s)</string>
+    <string name="update_check_failed">Check failed (network?)</string>
+    <string name="update_available_title">Version %1$s available</string>
+    <string name="update_available_no_notes">No release notes provided.</string>
+    <string name="update_available_size">Size: %1$s</string>
+    <string name="update_download">Download</string>
+    <string name="update_later">Later</string>
+    <string name="update_skipped">Version %1$s skipped. You can still check manually.</string>
+    <string name="update_downloading">Downloading v%1$s… (Wi-Fi only)</string>
+    <string name="update_downloading_description">Downloading version %1$s</string>
+    <string name="update_progress">Downloading: %1$d%%</string>
+    <string name="update_download_failed">The download failed.</string>
+    <string name="update_ready">Update ready to install</string>
+    <string name="update_install">Install</string>
+    <string name="update_permission_needed">First allow installing unknown apps.</string>
+    <string name="update_signature_error">The downloaded APK is not signed with the same key: Android would refuse to install it.</string>
+    <string name="update_notif_permission_title">DroidClean v%1$s update available</string>
+    <string name="update_notif_permission_text">Tap to allow installation, then the update will proceed automatically.</string>
+    <string name="update_notif_ready_title">DroidClean update ready</string>
+    <string name="update_notif_ready_text">Tap to install the new version.</string>
+
+    <string name="maintenance_title">⚙️ Maintenance</string>
+    <string name="maintenance_auto_clean">Clear caches weekly</string>
+    <string name="maintenance_auto_clean_hint">In the background, while the device is idle. Never touches your documents.</string>
+    <string name="maintenance_use_trash">Use the system bin</string>
+    <string name="maintenance_use_trash_hint">Your documents stay recoverable for about 30 days. Without this, deletion is permanent.</string>
+
+    <string name="privacy_button">Privacy and permissions</string>
+    <string name="privacy_title">Privacy</string>
+    <string name="privacy_message">DroidClean sends no personal data anywhere. Its only outgoing connection queries GitHub\'s public API to check for a newer version.\n\nWhy each permission:\n\n• All files access — read and delete the files you select. Scoped storage makes this impossible otherwise.\n• Usage access — compute real app sizes and last-used dates.\n• App list — count installed apps and spot leftovers from uninstalled ones.\n• Install apps — install the downloaded update.\n• Notifications — tell you an update is ready.\n• Internet — query GitHub Releases.\n\nCrash reports stay on the device until you choose to share them.</string>
+
+    <string name="onboarding_title">Welcome to DroidClean</string>
+    <string name="onboarding_message">DroidClean never deletes anything without showing it to you first.\n\nThe scan lists what can go; you tick, you confirm. Your documents go through the system bin, where they stay recoverable.\n\nTo go beyond its own caches, the app needs shared storage access.</string>
+    <string name="onboarding_ok">Got it</string>
+
+    <string name="channel_updates_name">Updates</string>
+    <string name="channel_updates_description">Availability and installation of new versions</string>
+    <string name="channel_maintenance_name">Maintenance</string>
+    <string name="channel_maintenance_description">Result of the weekly automatic cleanup</string>
+    <string name="notif_auto_clean_title">Weekly cleanup done</string>
+    <string name="notif_auto_clean_text">%1$s freed by clearing caches.</string>
+
+    <string name="tile_free">%1$s free</string>
+    <string name="tile_open">Open DroidClean</string>
+    <string name="tile_content_description">DroidClean: analyse storage</string>
+    <string name="shortcut_scan_short">Scan</string>
+    <string name="shortcut_scan_long">Scan storage</string>
+</resources>

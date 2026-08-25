@@ -1,23 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      `android:statusBarColor` a disparu : avec targetSdk 35, Android 15 impose le
+      bord-à-bord et ignore cet attribut. La couleur des barres est désormais gérée
+      par `enableEdgeToEdge()`, et le contenu est décalé par `Ui.applySystemBarInsets`.
+    -->
     <style name="Theme.DroidClean" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/brand</item>
         <item name="colorPrimaryVariant">@color/brand_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/on_brand</item>
         <item name="colorSecondary">@color/accent</item>
         <item name="colorSecondaryVariant">@color/accent_dark</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <item name="android:statusBarColor">@color/brand</item>
+        <item name="colorOnSecondary">@color/on_accent</item>
+        <item name="colorSurface">@color/card_bg</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorError">@color/danger</item>
+        <item name="android:colorBackground">@color/screen_bg</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="android:windowBackground">@color/screen_bg</item>
     </style>
 
     <style name="CardStyle" parent="Widget.MaterialComponents.CardView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:layout_marginBottom">@dimen/card_spacing</item>
+        <item name="cardBackgroundColor">@color/card_bg</item>
         <item name="cardCornerRadius">12dp</item>
         <item name="cardElevation">2dp</item>
         <item name="strokeColor">@color/card_stroke</item>
         <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="BannerStyle" parent="CardStyle">
+        <item name="cardBackgroundColor">@color/banner_bg</item>
+        <item name="strokeColor">@color/banner_stroke</item>
+    </style>
+
+    <style name="CardContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/card_padding</item>
     </style>
 
     <style name="CardTitle">
@@ -26,5 +50,56 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/text_primary</item>
+        <item name="android:accessibilityHeading" tools:targetApi="28">true</item>
+    </style>
+
+    <style name="CardSubtitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/text_hint</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+
+    <style name="StatLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:layout_marginTop">6dp</item>
+    </style>
+
+    <!--
+      Hauteur `wrap_content` + `minHeight` plutôt qu'une hauteur fixe : à 200 %
+      de taille de police, un bouton de 42dp tronque son propre libellé.
+    -->
+    <style name="ActionButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+
+    <style name="ActionButtonOutlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+
+    <style name="ActionButtonText" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+
+    <style name="SettingSwitch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:layout_marginTop">4dp</item>
     </style>
 </resources>

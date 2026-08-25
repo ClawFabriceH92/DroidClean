@@ -8,7 +8,8 @@ import android.util.Log
 
 /**
  * Reçoit la fin du téléchargement DownloadManager et propose l'installation
- * si c'est bien l'APK attendu (id mémorisé).
+ * si c'est bien l'APK attendu (identifiant mémorisé) et qu'il passe le contrôle
+ * de signature d'[ApkVerifier].
  *
  * Un receiver ne peut pas lancer d'activité en arrière-plan depuis Android 10 :
  * on n'installe directement que si l'app est au premier plan, sinon on poste une
@@ -27,9 +28,20 @@ class UpdateReceiver : BroadcastReceiver() {
             return
         }
 
+        when (val verdict = ApkVerifier.verify(context, AutoUpdater.apkFile(context))) {
+            ApkVerifier.Verdict.OK -> Unit
+            else -> {
+                // Cas le plus fréquent en pratique : APK produit par une CI sans
+                // secrets de signature, qu'Android refuserait d'installer.
+                Log.w(TAG, "APK de mise à jour refusé : $verdict")
+                AutoUpdater.apkFile(context).delete()
+                return
+            }
+        }
+
         val installIntent = AutoUpdater.installIntent(context)
         if (installIntent == null) {
-            Log.w(TAG, "Installation impossible (permission ou fichier manquant)")
+            Log.w(TAG, "Installation impossible (autorisation manquante)")
             return
         }
 

@@ -1,0 +1,26 @@
+DroidClean frees up space on your phone by showing you first what it proposes to
+delete.
+
+The scan lists cleanable items, grouped by category and detailed file by file:
+you tick what should go. Your documents go through the system bin, where they
+stay recoverable for about thirty days; caches, which regenerate, are deleted
+permanently.
+
+Features:
+
+* Fine-grained selection before deletion, with filters (age, size, risk)
+* Caches, leftovers from uninstalled apps, thumbnails, empty folders
+* Real size of every app: APK, data, cache and last use
+* The hundred largest files, and duplicate detection
+* Storage, memory and battery status (cycles, real capacity)
+* Weekly automatic cache cleanup — never your documents
+* Quick Settings tile and a scan shortcut
+* Automatic updates from GitHub Releases, release notes included
+
+What DroidClean does not do: promise to speed up your phone by killing
+processes. Since Android 5.1 an app no longer sees other apps' processes, and
+"freeing" memory simply makes them relaunch later. The Memory card informs, it
+does not act.
+
+No personal data leaves the device. Its only outgoing connection queries
+GitHub's public API to check for a newer version.

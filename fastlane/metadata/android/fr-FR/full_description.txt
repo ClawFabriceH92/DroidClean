@@ -1,0 +1,26 @@
+DroidClean libère de l'espace sur votre téléphone en vous montrant d'abord ce
+qu'il propose de supprimer.
+
+L'analyse liste les éléments nettoyables, groupés par catégorie et détaillés
+fichier par fichier : vous cochez ce qui doit partir. Vos documents passent par
+la corbeille du système, où ils restent récupérables une trentaine de jours ; les
+caches, qui se régénèrent, sont supprimés définitivement.
+
+Fonctionnalités :
+
+* Sélection fine avant suppression, avec filtres (ancienneté, taille, risque)
+* Caches, résidus d'applications désinstallées, vignettes, dossiers vides
+* Poids réel de chaque application : APK, données, cache et dernière utilisation
+* Les cent plus gros fichiers et la détection des doublons
+* État du stockage, de la mémoire et de la batterie (cycles, capacité réelle)
+* Nettoyage hebdomadaire automatique des caches, jamais de vos documents
+* Tuile Réglages rapides et raccourci d'analyse
+* Mise à jour automatique depuis les GitHub Releases, notes de version incluses
+
+Ce que DroidClean ne fait pas : promettre d'accélérer votre téléphone en tuant
+des processus. Depuis Android 5.1, une application ne voit plus ceux des autres,
+et « libérer » la mémoire les fait simplement relancer plus tard. La carte
+Mémoire informe, elle n'agit pas.
+
+Aucune donnée personnelle ne quitte l'appareil. La seule connexion sortante
+interroge l'API publique de GitHub pour savoir s'il existe une nouvelle version.

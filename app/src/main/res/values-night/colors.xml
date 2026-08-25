@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Palette du mode sombre. Correction du défaut le plus visible de la version
+  précédente : les cartes Material passaient en surface sombre alors que les
+  couleurs de texte restaient codées pour le mode clair — texte gris foncé sur
+  fond noir, donc illisible.
+
+  Contrastes vérifiés sur fond #FF121212 (WCAG AA, seuil 4,5:1 pour le corps de
+  texte, 3:1 pour les gros caractères et les éléments non textuels).
+-->
+<resources>
+    <color name="brand">#FF8AB4F8</color>
+    <color name="brand_dark">#FF669DF6</color>
+    <color name="on_brand">#FF06213F</color>
+    <color name="accent">#FF81C995</color>
+    <color name="accent_dark">#FF5BB974</color>
+    <color name="on_accent">#FF072711</color>
+
+    <color name="screen_bg">#FF121212</color>
+    <color name="card_bg">#FF1E1E1E</color>
+    <color name="card_stroke">#FF333333</color>
+
+    <color name="text_primary">#FFECECEC</color>
+    <color name="text_secondary">#FFCFCFCF</color>
+    <color name="text_tertiary">#FFB4B4B4</color>
+    <color name="text_hint">#FF9AA0A6</color>
+    <color name="text_footer">#FF7E858B</color>
+
+    <color name="bar_track">#FF2C2C2C</color>
+    <color name="bar_fill_used">#FF8AB4F8</color>
+    <color name="bar_fill_free">#FF3C4043</color>
+
+    <color name="battery_ok">#FF81C995</color>
+    <color name="battery_low">#FFFCAD70</color>
+    <color name="battery_critical">#FFF28B82</color>
+
+    <color name="banner_bg">#FF2B2515</color>
+    <color name="banner_stroke">#FF6D5A2B</color>
+    <color name="banner_text">#FFF3E2C0</color>
+
+    <color name="danger">#FFF28B82</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

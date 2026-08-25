@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- L'identifiant de téléchargement DownloadManager est local à l'appareil :
-     le sauvegarder n'a aucun sens (et pointerait sur un download inexistant). -->
+<!--
+  L'identifiant de téléchargement DownloadManager est local à l'appareil : le
+  sauvegarder n'a aucun sens (il pointerait sur un téléchargement inexistant).
+  Le rapport de plantage et l'APK téléchargé n'ont rien à faire dans une
+  sauvegarde non plus. L'historique des nettoyages, lui, mérite d'être conservé.
+-->
 <full-backup-content>
     <exclude domain="sharedpref" path="droidclean_update.xml" />
     <exclude domain="sharedpref" path="droidcleanupdate.xml" />
+    <exclude domain="file" path="crash/" />
     <exclude domain="external" path="Download/" />
 </full-backup-content>

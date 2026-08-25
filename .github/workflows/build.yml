@@ -1,8 +1,8 @@
-# Workflow GitHub Actions Android — build APK + release automatique
-# - push sur n'importe quelle branche → tests + lint + build (APK en artefact)
-# - push sur main                     → publication de la release flottante "latest"
-# - tag v*                            → release versionnée, version dérivée du tag
-# - workflow_dispatch                 → build manuel
+# Workflow GitHub Actions Android — vérifications + build APK + release automatique
+# - push / pull request sur n'importe quelle branche → contrôles + build (APK en artefact)
+# - push sur main                                    → release flottante "latest"
+# - tag v*                                           → release versionnée, version dérivée du tag
+# - workflow_dispatch                                → build manuel
 #
 # Signature stable : keystore release stocké en secrets GitHub (DROIDCLEAN_KEYSTORE_*) —
 # indispensable pour les mises à jour automatiques de l'app (même clé à chaque build).
@@ -12,6 +12,7 @@ on:
   push:
     branches: ["**"]
     tags: ["v*"]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -60,10 +61,17 @@ jobs:
             echo "GRADLE_VERSION_ARG=" >> "$GITHUB_ENV"
           fi
 
+      # Lint attrape les chaînes manquantes, mais pas un `%1$s` devenu `%1$d`
+      # dans une traduction : un plantage à l'exécution, dans cette langue seulement.
+      - name: Vérifier les traductions
+        run: python3 tools/check-strings.py
+
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest $GRADLE_VERSION_ARG
 
-      - name: Lint (rapport non bloquant)
+      # Les erreurs lint bloquent (API trop récente, permission manquante,
+      # format de chaîne invalide) ; les avertissements restent informatifs.
+      - name: Lint
         run: ./gradlew lintRelease $GRADLE_VERSION_ARG
 
       - name: Upload lint report
@@ -114,9 +122,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Les notes de release sont la section correspondante du CHANGELOG :
+          # c'est exactement ce que l'app affichera avant de proposer la mise à jour.
+          NOTES_FILE=$(mktemp)
+          python3 tools/changelog-section.py "$GITHUB_REF_NAME" > "$NOTES_FILE" || true
+          if [ ! -s "$NOTES_FILE" ]; then
+            echo "Build automatique — APK $GITHUB_REF_NAME (signé, mise à jour automatique)." > "$NOTES_FILE"
+          fi
           gh release create "$GITHUB_REF_NAME" "droidclean-v${APP_VERSION}.apk" \
             --title "$GITHUB_REF_NAME" \
-            --notes "Build automatique — APK $GITHUB_REF_NAME (signé, mise à jour automatique)." \
+            --notes-file "$NOTES_FILE" \
             --repo "${{ github.repository }}" \
             || gh release upload "$GITHUB_REF_NAME" "droidclean-v${APP_VERSION}.apk" \
                --clobber --repo "${{ github.repository }}"

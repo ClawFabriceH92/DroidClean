@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Raccourci d'appui long sur l'icône : analyser sans passer par l'écran d'accueil. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="scan"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification"
+        android:shortcutShortLabel="@string/shortcut_scan_short"
+        android:shortcutLongLabel="@string/shortcut_scan_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.fabrice.droidclean"
+            android:targetClass="com.fabrice.droidclean.MainActivity">
+            <extra
+                android:name="com.fabrice.droidclean.START_SCAN"
+                android:value="true" />
+        </intent>
+    </shortcut>
+</shortcuts>
