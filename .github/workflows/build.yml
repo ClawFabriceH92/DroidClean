@@ -40,7 +40,7 @@ jobs:
           java-version: 17
 
       - name: Set up Gradle (avec cache)
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Install Android SDK 35
         run: |
