@@ -1,0 +1,9 @@
+Le nettoyage ne supprime plus rien à l'aveugle : l'analyse liste ce qui peut
+partir, vous cochez, vos documents passent par la corbeille du système.
+
+Nouveaux écrans : poids réel des applications, gros fichiers, doublons.
+Ajouts : tuile Réglages rapides, ménage hebdomadaire des caches, historique,
+notes de version, rapport de plantage local, anglais.
+
+Corrigé : mode sombre illisible, bord-à-bord Android 15.
+Retiré : le « Boost RAM », qui ne pouvait rien accélérer.

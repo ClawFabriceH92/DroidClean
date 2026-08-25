@@ -12,7 +12,10 @@ class UpdateWorker(
 
     override suspend fun doWork(): Result {
         if (!UpdateManager.autoUpdateEnabled(applicationContext)) return Result.success()
-        return when (UpdateManager.check(applicationContext)) {
+        // Ménage : un APK déjà installé ou périmé n'a plus rien à faire sur le disque.
+        AutoUpdater.discardObsoleteApk(applicationContext)
+
+        return when (UpdateManager.check(applicationContext, interactive = false)) {
             // Réseau ou API indisponible : WorkManager réessaiera avec backoff.
             is UpdateManager.CheckResult.Failed -> Result.retry()
             else -> Result.success()

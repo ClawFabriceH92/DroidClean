@@ -1,354 +1,430 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/screen_bg">
 
-    <LinearLayout
+    <!--
+      clipToPadding=false : avec le bord-à-bord d'Android 15, le rembourrage
+      d'insets est appliqué ici par Ui.applySystemBarInsets ; sans cet attribut,
+      le contenu serait coupé au lieu de défiler sous les barres système.
+    -->
+    <ScrollView
+        android:id="@+id/scrollRoot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingLeft="@dimen/screen_padding"
+        android:paddingTop="@dimen/screen_padding"
+        android:paddingRight="@dimen/screen_padding"
+        android:paddingBottom="@dimen/screen_padding">
 
-        <!-- Header -->
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/brand"
-            android:layout_marginBottom="4dp" />
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_tagline"
-            android:textSize="14sp"
-            android:textColor="@color/text_tertiary"
-            android:layout_marginBottom="20dp" />
-
-        <!-- === CARTE NETTOYAGE === -->
-        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="2dp"
+                android:text="@string/app_name"
+                android:textColor="@color/brand"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:accessibilityHeading="true"
+                tools:ignore="UnusedAttribute" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/app_tagline"
+                android:textColor="@color/text_tertiary"
+                android:textSize="14sp" />
+
+            <!-- === BANDEAU PLANTAGE (masqué s'il n'y a rien à signaler) === -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCrash"
+                style="@style/BannerStyle"
+                android:visibility="gone">
+
+                <LinearLayout style="@style/CardContent">
 
                     <TextView
                         style="@style/CardTitle"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:text="@string/clean_title" />
+                        android:text="@string/crash_title"
+                        android:textColor="@color/banner_text" />
 
                     <TextView
-                        android:id="@+id/tvCleanSize"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/placeholder"
-                        android:textSize="16sp"
-                        android:textColor="@color/brand"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/clean_subtitle"
-                    android:textSize="13sp"
-                    android:textColor="@color/text_hint"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="12dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                        android:id="@+id/tvCrashText"
+                        style="@style/CardSubtitle"
+                        android:text="@string/crash_message"
+                        android:textColor="@color/banner_text" />
 
                     <Button
-                        android:id="@+id/btnAnalyzeClean"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="42dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="6dp"
+                        android:id="@+id/btnCrashShare"
+                        style="@style/ActionButton"
+                        android:text="@string/crash_share" />
+
+                    <Button
+                        android:id="@+id/btnCrashDismiss"
+                        style="@style/ActionButtonText"
+                        android:text="@string/crash_dismiss" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- === BANDEAU PERMISSION STOCKAGE === -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPermission"
+                style="@style/BannerStyle"
+                android:visibility="gone">
+
+                <LinearLayout style="@style/CardContent">
+
+                    <TextView
+                        style="@style/CardTitle"
+                        android:text="@string/permission_title"
+                        android:textColor="@color/banner_text" />
+
+                    <TextView
+                        android:id="@+id/tvPermissionText"
+                        style="@style/CardSubtitle"
+                        android:text="@string/permission_message"
+                        android:textColor="@color/banner_text" />
+
+                    <Button
+                        android:id="@+id/btnGrantStorage"
+                        style="@style/ActionButton"
+                        android:text="@string/permission_grant" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- === NETTOYAGE === -->
+            <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
+
+                <LinearLayout style="@style/CardContent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/CardTitle"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:text="@string/clean_title" />
+
+                        <TextView
+                            android:id="@+id/tvCleanSize"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/placeholder"
+                            android:textColor="@color/brand"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/CardSubtitle"
+                        android:text="@string/clean_subtitle" />
+
+                    <TextView
+                        android:id="@+id/tvCleanBreakdown"
+                        style="@style/StatLine"
+                        android:text="@string/clean_not_analyzed" />
+
+                    <TextView
+                        android:id="@+id/tvCleanHistory"
+                        style="@style/StatLine"
+                        android:textColor="@color/text_hint" />
+
+                    <Button
+                        android:id="@+id/btnAnalyze"
+                        style="@style/ActionButton"
                         android:text="@string/clean_analyze" />
 
                     <Button
-                        android:id="@+id/btnClean"
-                        android:layout_width="0dp"
-                        android:layout_height="42dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="6dp"
-                        android:text="@string/clean_action"
-                        android:enabled="false" />
+                        android:id="@+id/btnQuickClean"
+                        style="@style/ActionButtonOutlined"
+                        android:text="@string/clean_quick" />
                 </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            </com.google.android.material.card.MaterialCardView>
 
-        <!-- === CARTE RAM === -->
-        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
+            <!-- === STOCKAGE === -->
+            <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    style="@style/CardTitle"
-                    android:text="@string/ram_title" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ram_subtitle"
-                    android:textSize="13sp"
-                    android:textColor="@color/text_hint"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="8dp" />
-
-                <!-- Barre RAM (poids proportionnels, indépendants de la densité) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:orientation="horizontal"
-                    android:background="@drawable/bar_bg"
-                    android:weightSum="100"
-                    android:layout_marginBottom="8dp">
-
-                    <View
-                        android:id="@+id/ramUsedBar"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0"
-                        android:background="@drawable/bar_used" />
-
-                    <View
-                        android:id="@+id/ramFreeBar"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="100"
-                        android:background="@drawable/bar_free" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvRamInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/placeholder"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
-                    android:id="@+id/btnBoost"
-                    android:layout_width="match_parent"
-                    android:layout_height="42dp"
-                    android:text="@string/ram_boost" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- === CARTE BATTERIE === -->
-        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    style="@style/CardTitle"
-                    android:text="@string/battery_title" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
+                <LinearLayout style="@style/CardContent">
 
                     <TextView
-                        android:id="@+id/tvBatteryPct"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/placeholder"
-                        android:textSize="36sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/battery_ok" />
+                        style="@style/CardTitle"
+                        android:text="@string/storage_title" />
+
+                    <TextView
+                        android:id="@+id/tvStorageInfo"
+                        style="@style/StatLine"
+                        android:text="@string/placeholder" />
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="end">
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/bar_height"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bar_bg"
+                        android:importantForAccessibility="no"
+                        android:orientation="horizontal"
+                        android:weightSum="100">
 
-                        <TextView
-                            android:id="@+id/tvBatteryTemp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/placeholder"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_tertiary" />
+                        <View
+                            android:id="@+id/storageUsedBar"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0"
+                            android:background="@drawable/bar_used" />
 
-                        <TextView
-                            android:id="@+id/tvBatteryHealth"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/placeholder"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_tertiary" />
+                        <View
+                            android:id="@+id/storageFreeBar"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="100"
+                            android:background="@drawable/bar_free" />
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvStorageVolumes"
+                        style="@style/StatLine"
+                        android:textColor="@color/text_hint"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/btnAnalyzeStorage"
+                        style="@style/ActionButton"
+                        android:text="@string/storage_analyze" />
+
+                    <Button
+                        android:id="@+id/btnOpenDownloads"
+                        style="@style/ActionButtonText"
+                        android:text="@string/storage_open_downloads" />
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:id="@+id/tvBatteryStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="@color/text_hint"
-                    android:layout_marginTop="4dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            <!-- === APPLICATIONS === -->
+            <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
 
-        <!-- === CARTE STOCKAGE === -->
-        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
+                <LinearLayout style="@style/CardContent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                    <TextView
+                        style="@style/CardTitle"
+                        android:text="@string/apps_title" />
 
-                <TextView
-                    style="@style/CardTitle"
-                    android:text="@string/storage_title" />
+                    <TextView
+                        android:id="@+id/tvAppsInfo"
+                        style="@style/StatLine"
+                        android:text="@string/placeholder" />
 
-                <TextView
-                    android:id="@+id/tvStorageInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/placeholder"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="8dp" />
+                    <Button
+                        android:id="@+id/btnAppsStorage"
+                        style="@style/ActionButton"
+                        android:text="@string/apps_storage" />
 
-                <!-- Barre stockage -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:orientation="horizontal"
-                    android:background="@drawable/bar_bg"
-                    android:weightSum="100"
-                    android:layout_marginTop="8dp">
-
-                    <View
-                        android:id="@+id/storageUsedBar"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0"
-                        android:background="@drawable/bar_used" />
-
-                    <View
-                        android:id="@+id/storageFreeBar"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="100"
-                        android:background="@drawable/bar_free" />
+                    <Button
+                        android:id="@+id/btnAppSettings"
+                        style="@style/ActionButtonText"
+                        android:text="@string/apps_manage" />
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <Button
-                    android:id="@+id/btnOpenDownloads"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="42dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/storage_open_downloads" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            <!-- === MÉMOIRE === -->
+            <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
 
-        <!-- === CARTE APPLICATIONS === -->
-        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
+                <LinearLayout style="@style/CardContent">
 
-            <LinearLayout
+                    <TextView
+                        style="@style/CardTitle"
+                        android:text="@string/ram_title" />
+
+                    <TextView
+                        android:id="@+id/tvRamInfo"
+                        style="@style/StatLine"
+                        android:text="@string/placeholder" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/bar_height"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bar_bg"
+                        android:importantForAccessibility="no"
+                        android:orientation="horizontal"
+                        android:weightSum="100">
+
+                        <View
+                            android:id="@+id/ramUsedBar"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0"
+                            android:background="@drawable/bar_used" />
+
+                        <View
+                            android:id="@+id/ramFreeBar"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="100"
+                            android:background="@drawable/bar_free" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvRamNote"
+                        style="@style/CardSubtitle"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/ram_note" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- === BATTERIE === -->
+            <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
+
+                <LinearLayout style="@style/CardContent">
+
+                    <TextView
+                        style="@style/CardTitle"
+                        android:text="@string/battery_title" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvBatteryPct"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/placeholder"
+                            android:textColor="@color/battery_ok"
+                            android:textSize="36sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvBatteryTemp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/placeholder"
+                                android:textColor="@color/text_tertiary"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvBatteryHealth"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/placeholder"
+                                android:textColor="@color/text_tertiary"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvBatteryStatus"
+                        style="@style/StatLine"
+                        android:textColor="@color/text_hint" />
+
+                    <TextView
+                        android:id="@+id/tvBatteryDetails"
+                        style="@style/StatLine"
+                        android:textColor="@color/text_hint" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- === MISES À JOUR === -->
+            <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
+
+                <LinearLayout style="@style/CardContent">
+
+                    <TextView
+                        style="@style/CardTitle"
+                        android:text="@string/update_title" />
+
+                    <TextView
+                        android:id="@+id/tvUpdateStatus"
+                        style="@style/StatLine"
+                        android:text="@string/update_idle" />
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progressUpdate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        app:trackCornerRadius="4dp" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/swAutoUpdate"
+                        style="@style/SettingSwitch"
+                        android:text="@string/update_auto" />
+
+                    <Button
+                        android:id="@+id/btnCheckUpdate"
+                        style="@style/ActionButton"
+                        android:text="@string/update_check_now" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- === MAINTENANCE === -->
+            <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
+
+                <LinearLayout style="@style/CardContent">
+
+                    <TextView
+                        style="@style/CardTitle"
+                        android:text="@string/maintenance_title" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/swAutoClean"
+                        style="@style/SettingSwitch"
+                        android:text="@string/maintenance_auto_clean" />
+
+                    <TextView
+                        style="@style/CardSubtitle"
+                        android:text="@string/maintenance_auto_clean_hint" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/swUseTrash"
+                        style="@style/SettingSwitch"
+                        android:text="@string/maintenance_use_trash" />
+
+                    <TextView
+                        style="@style/CardSubtitle"
+                        android:text="@string/maintenance_use_trash_hint" />
+
+                    <Button
+                        android:id="@+id/btnPrivacy"
+                        style="@style/ActionButtonText"
+                        android:text="@string/privacy_button" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvFooter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    style="@style/CardTitle"
-                    android:text="@string/apps_title" />
-
-                <TextView
-                    android:id="@+id/tvAppsInfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/placeholder"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="8dp" />
-
-                <Button
-                    android:id="@+id/btnAppSettings"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="42dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/apps_manage" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- === CARTE MISES À JOUR === -->
-        <com.google.android.material.card.MaterialCardView style="@style/CardStyle">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    style="@style/CardTitle"
-                    android:text="@string/update_title" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/swAutoUpdate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/update_auto"
-                    android:textColor="@color/text_secondary" />
-
-                <Button
-                    android:id="@+id/btnCheckUpdate"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="42dp"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/update_check_now" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Footer -->
-        <TextView
-            android:id="@+id/tvFooter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@color/text_footer"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp" />
-
-    </LinearLayout>
-</ScrollView>
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:textColor="@color/text_footer"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

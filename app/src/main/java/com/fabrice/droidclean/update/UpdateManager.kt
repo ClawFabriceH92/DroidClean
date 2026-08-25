@@ -7,6 +7,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.fabrice.droidclean.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
@@ -16,13 +17,19 @@ import java.util.concurrent.TimeUnit
  *
  * La vérification périodique est confiée à WorkManager (une fois par jour, quand
  * le réseau est disponible) : contrairement à une boucle de coroutine, elle
- * survit à la mort du process, respecte le Doze et ne réveille pas l'appareil
- * toutes les 30 secondes.
+ * survit à la mort du processus, respecte le Doze et ne réveille pas l'appareil.
+ *
+ * Deux chemins distincts, parce qu'ils n'ont pas les mêmes droits :
+ * - **interactif** : la vérification retourne [CheckResult.Available] et l'interface
+ *   montre les notes de version avant de télécharger quoi que ce soit ;
+ * - **arrière-plan** : le worker télécharge directement, sauf si l'utilisateur a
+ *   explicitement ignoré cette version.
  */
 object UpdateManager {
 
     private const val PREFS = "droidcleanupdate"
     private const val KEY_AUTO = "autoUpdate"
+    private const val KEY_SKIPPED = "skippedVersion"
     private const val WORK_NAME = "droidclean-daily-update-check"
 
     /**
@@ -33,36 +40,39 @@ object UpdateManager {
     @Volatile
     var appInForeground: Boolean = false
 
-    /** Résultat d'une vérification, pour retour à l'utilisateur. */
     sealed interface CheckResult {
         data class UpToDate(val current: String) : CheckResult
-        data class Downloading(val version: String) : CheckResult
-        data class PermissionNeeded(val version: String) : CheckResult
+        /** Une version existe ; à l'interface de la proposer. */
+        data class Available(val info: UpdateInfo) : CheckResult
+        data class Downloading(val info: UpdateInfo) : CheckResult
+        data class PermissionNeeded(val info: UpdateInfo) : CheckResult
         data object Failed : CheckResult
     }
 
     fun autoUpdateEnabled(context: Context): Boolean =
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_AUTO, true)
+        prefs(context).getBoolean(KEY_AUTO, true)
 
     fun setAutoUpdate(context: Context, enabled: Boolean) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putBoolean(KEY_AUTO, enabled).apply()
-        val appContext = context.applicationContext
-        if (enabled) schedulePeriodicCheck(appContext) else cancelPeriodicCheck(appContext)
+        prefs(context).edit().putBoolean(KEY_AUTO, enabled).apply()
+        sync(context)
     }
 
-    /** À appeler une fois depuis le onCreate de l'activité principale. */
-    fun start(context: Context) {
+    /** Version explicitement ignorée par l'utilisateur (« Plus tard »). */
+    fun skippedVersion(context: Context): String? =
+        prefs(context).getString(KEY_SKIPPED, null)
+
+    fun skipVersion(context: Context, version: String) {
+        prefs(context).edit().putString(KEY_SKIPPED, version).apply()
+    }
+
+    /** Aligne la planification sur la préférence. Idempotent, appelé au démarrage. */
+    fun sync(context: Context) {
         val appContext = context.applicationContext
-        UpdateNotifier.ensureChannel(appContext)
-        if (autoUpdateEnabled(appContext)) {
-            schedulePeriodicCheck(appContext)
-        } else {
-            cancelPeriodicCheck(appContext)
+        val wm = WorkManager.getInstance(appContext)
+        if (!autoUpdateEnabled(appContext)) {
+            wm.cancelUniqueWork(WORK_NAME)
+            return
         }
-    }
-
-    private fun schedulePeriodicCheck(context: Context) {
         val request = PeriodicWorkRequestBuilder<UpdateWorker>(1, TimeUnit.DAYS)
             .setConstraints(
                 Constraints.Builder()
@@ -70,22 +80,19 @@ object UpdateManager {
                     .build()
             )
             .build()
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
-            request,
-        )
-    }
-
-    private fun cancelPeriodicCheck(context: Context) {
-        WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
+        // UPDATE et non KEEP : avec KEEP, toute évolution ultérieure de l'intervalle
+        // ou des contraintes ne serait jamais appliquée aux installations existantes.
+        wm.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.UPDATE, request)
     }
 
     /**
-     * Vérifie GitHub Releases et déclenche le téléchargement s'il y a mieux
-     * que la version installée. Suspend : appelable depuis l'UI comme depuis le worker.
+     * Interroge GitHub Releases.
+     *
+     * En mode [interactive], se contente de rapporter ce qui existe : c'est
+     * l'interface qui affichera les notes de version et déclenchera, ou non, le
+     * téléchargement.
      */
-    suspend fun check(context: Context): CheckResult {
+    suspend fun check(context: Context, interactive: Boolean): CheckResult {
         val appContext = context.applicationContext
         val current = currentVersion(appContext)
         val info = withContext(Dispatchers.IO) { UpdateChecker.latestWithApk() }
@@ -94,15 +101,27 @@ object UpdateManager {
         if (UpdateChecker.compareVersions(info.versionName, current) <= 0) {
             return CheckResult.UpToDate(current)
         }
+        if (interactive) return CheckResult.Available(info)
+
+        // Arrière-plan : on respecte un « Plus tard » explicite.
+        if (skippedVersion(appContext) == info.versionName) return CheckResult.UpToDate(current)
+        return startDownload(appContext, info)
+    }
+
+    /** Déclenche le téléchargement, ou signale ce qui manque pour le faire. */
+    fun startDownload(context: Context, info: UpdateInfo): CheckResult {
+        val appContext = context.applicationContext
         if (!AutoUpdater.canRequestInstalls(appContext)) {
             UpdateNotifier.notifyPermissionNeeded(appContext, info)
-            return CheckResult.PermissionNeeded(info.versionName)
+            return CheckResult.PermissionNeeded(info)
         }
-        return if (AutoUpdater.download(appContext, info.downloadUrl)) {
-            CheckResult.Downloading(info.versionName)
-        } else {
-            CheckResult.Failed
-        }
+        val started = AutoUpdater.download(
+            context = appContext,
+            url = info.downloadUrl,
+            title = appContext.getString(R.string.app_name),
+            description = appContext.getString(R.string.update_downloading_description, info.versionName),
+        )
+        return if (started) CheckResult.Downloading(info) else CheckResult.Failed
     }
 
     fun currentVersion(context: Context): String = try {
@@ -110,4 +129,7 @@ object UpdateManager {
     } catch (_: PackageManager.NameNotFoundException) {
         ""
     }
+
+    private fun prefs(context: Context) =
+        context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 }

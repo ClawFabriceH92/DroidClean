@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hauteur minimale des cibles tactiles (recommandation Material et
+         critère d'accessibilité WCAG). Une hauteur *fixe* casserait la mise en
+         page dès que l'utilisateur agrandit la police du système. -->
+    <dimen name="touch_target_min">48dp</dimen>
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_spacing">12dp</dimen>
+    <dimen name="bar_height">20dp</dimen>
+</resources>

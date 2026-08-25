@@ -3,8 +3,8 @@ import java.util.Base64
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 /**
@@ -16,13 +16,17 @@ plugins {
 val appVersionName: String =
     (providers.gradleProperty("droidcleanVersionName").orNull)
         ?.trim()?.removePrefix("v")?.takeIf { it.isNotBlank() }
-        ?: "1.1.0"
+        ?: "1.2.0"
 
 fun versionCodeOf(name: String): Int {
     val parts = name.split("-", "+")[0].split(".").map { it.toIntOrNull() ?: 0 }
     val major = parts.getOrElse(0) { 0 }
     val minor = parts.getOrElse(1) { 0 }
     val patch = parts.getOrElse(2) { 0 }
+    require(minor in 0..99 && patch in 0..99) {
+        "Version $name : minor et patch doivent rester < 100, sinon le versionCode " +
+            "cesse d'être strictement croissant."
+    }
     return major * 10_000 + minor * 100 + patch
 }
 
@@ -39,6 +43,7 @@ android {
         targetSdk = 35
         versionCode = versionCodeOf(appVersionName)
         versionName = appVersionName
+        resourceConfigurations += setOf("fr", "en")
     }
 
     signingConfigs {
@@ -77,15 +82,24 @@ android {
     buildFeatures {
         compose = false
         buildConfig = true
+        // Remplace une vingtaine de `lateinit` + `findViewById` : un identifiant
+        // erroné devient une erreur de compilation au lieu d'un plantage.
+        viewBinding = true
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 
     lint {
+        // Les *erreurs* lint bloquent désormais la CI : ce sont de vrais défauts
+        // (appel d'API trop récente, permission manquante, format de chaîne invalide).
+        // Les avertissements restent informatifs pour ne pas bloquer sur du style.
+        abortOnError = true
         warningsAsErrors = false
-        // La CI publie le rapport sans bloquer la release sur un avertissement.
-        abortOnError = false
         checkReleaseBuilds = true
-        // Les libellés de l'app sont volontairement en français uniquement.
-        disable += setOf("MissingTranslation")
+        checkDependencies = false
+        htmlReport = true
     }
 }
 
@@ -102,15 +116,16 @@ tasks.register("printVersionName") {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.activity:activity-ktx:1.9.3")
-    implementation("androidx.cardview:cardview:1.0.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
-    implementation("com.google.android.material:material:1.12.0")
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.json:json:20240303")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.google.material)
+    implementation(libs.kotlinx.coroutines.android)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.org.json)
 }

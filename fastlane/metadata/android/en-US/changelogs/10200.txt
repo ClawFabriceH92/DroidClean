@@ -1,0 +1,9 @@
+Cleanup no longer deletes blind: the scan lists what can go, you tick it, and
+your documents go through the system bin.
+
+New screens: real app sizes, largest files, duplicates.
+Added: Quick Settings tile, weekly cache cleanup, history, release notes before
+updating, local crash reports, English translation.
+
+Fixed: unreadable dark mode, Android 15 edge-to-edge, wrong freed-bytes count.
+Removed: "RAM Boost", which could not speed anything up.

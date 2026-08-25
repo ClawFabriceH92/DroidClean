@@ -13,6 +13,8 @@ data class UpdateInfo(
     val downloadUrl: String,
     val notes: String?,
     val publishedAt: String?,
+    /** Taille de l'APK annoncée par GitHub, 0 si inconnue. */
+    val sizeBytes: Long = 0L,
 )
 
 object UpdateChecker {
@@ -71,6 +73,7 @@ object UpdateChecker {
                         downloadUrl = url,
                         notes = rel.optString("body").takeIf { it.isNotBlank() },
                         publishedAt = rel.optString("published_at").takeIf { it.isNotBlank() },
+                        sizeBytes = asset.optLong("size", 0L),
                     )
                     if (best == null || compareVersions(info.versionName, best.versionName) > 0) {
                         best = info

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Permet de choisir la langue de DroidClean indépendamment du système
+     (Réglages ▸ Applications ▸ DroidClean ▸ Langue, Android 13+). -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="fr" />
+    <locale android:name="en" />
+</locale-config>
