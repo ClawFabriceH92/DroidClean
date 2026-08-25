@@ -37,6 +37,13 @@ class JunkActivity : AppCompatActivity() {
     private val selectedPaths = LinkedHashSet<String>()
     private var busy = false
 
+    /**
+     * Sélection à restaurer après un changement de configuration. L'orientation
+     * n'étant plus verrouillée, une rotation en pleine sélection ferait autrement
+     * perdre toutes les cases cochées.
+     */
+    private var selectionToRestore: List<String>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -56,7 +63,13 @@ class JunkActivity : AppCompatActivity() {
         binding.chipSelectAll.setOnClickListener { toggleSelectAll() }
         binding.btnCleanSelected.setOnClickListener { confirmClean() }
 
+        selectionToRestore = savedInstanceState?.getStringArrayList(STATE_SELECTED)
         loadScan()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putStringArrayList(STATE_SELECTED, ArrayList(selectedPaths))
     }
 
     // ------------------------------------------------------------------ données
@@ -66,10 +79,19 @@ class JunkActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) { Cleaner.scan(applicationContext) }
             scan = result
-            // Pré-sélection : uniquement ce qui se régénère. Les documents de
-            // l'utilisateur restent décochés tant qu'il ne les coche pas lui-même.
             selectedPaths.clear()
-            result.items.filter { it.category.isSafe }.forEach { selectedPaths.add(it.path) }
+            val restored = selectionToRestore
+            if (restored != null) {
+                // Après rotation : on reprend la sélection, limitée à ce qui existe
+                // encore (un fichier a pu disparaître entre-temps).
+                val stillThere = result.items.mapTo(HashSet()) { it.path }
+                restored.filterTo(selectedPaths) { it in stillThere }
+                selectionToRestore = null
+            } else {
+                // Pré-sélection : uniquement ce qui se régénère. Les documents de
+                // l'utilisateur restent décochés tant qu'il ne les coche pas lui-même.
+                result.items.filter { it.category.isSafe }.forEach { selectedPaths.add(it.path) }
+            }
             setLoading(false)
             render()
         }
@@ -215,5 +237,6 @@ class JunkActivity : AppCompatActivity() {
     private companion object {
         const val BIG_FILE_BYTES = 10L * 1024 * 1024
         const val OLD_FILE_DAYS = 30
+        const val STATE_SELECTED = "selectedPaths"
     }
 }
