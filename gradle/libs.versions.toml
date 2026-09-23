@@ -1,7 +1,7 @@
 # Catalogue de versions : une seule source de vérité pour les dépendances,
 # lisible par Dependabot et par les humains.
 [versions]
-agp = "8.7.3"
+agp = "9.3.2"
 kotlin = "2.1.0"
 activity = "1.9.3"
 appcompat = "1.7.0"
