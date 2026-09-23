@@ -16,7 +16,7 @@ plugins {
 val appVersionName: String =
     (providers.gradleProperty("droidcleanVersionName").orNull)
         ?.trim()?.removePrefix("v")?.takeIf { it.isNotBlank() }
-        ?: "1.2.0"
+        ?: "1.3.0"
 
 fun versionCodeOf(name: String): Int {
     val parts = name.split("-", "+")[0].split(".").map { it.toIntOrNull() ?: 0 }

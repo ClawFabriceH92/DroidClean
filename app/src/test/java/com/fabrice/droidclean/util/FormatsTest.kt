@@ -1,6 +1,7 @@
 package com.fabrice.droidclean.util
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Locale
 
@@ -51,6 +52,18 @@ class FormatsTest {
         assertEquals(0, Formats.percent(10, 0))
         assertEquals(100, Formats.percent(200, 100))
         assertEquals(0, Formats.percent(-5, 100))
+    }
+
+    @Test
+    fun `splitDuration - découpage et arrondi à la minute`() {
+        assertEquals(Formats.DurationParts(0, 0, 0), Formats.splitDuration(0))
+        assertEquals(Formats.DurationParts(0, 0, 0), Formats.splitDuration(-5000))
+        assertEquals(Formats.DurationParts(0, 0, 45), Formats.splitDuration(45 * 60_000L))
+        assertEquals(Formats.DurationParts(0, 2, 30), Formats.splitDuration(150 * 60_000L))
+        assertEquals(Formats.DurationParts(1, 4, 0), Formats.splitDuration(28 * 3_600_000L))
+        // 1 h 59 min 40 s s'arrondit à 2 h pile, pas à 1 h 59.
+        assertEquals(Formats.DurationParts(0, 2, 0), Formats.splitDuration(7_180_000L))
+        assertTrue(Formats.splitDuration(0).isZero)
     }
 
     @Test

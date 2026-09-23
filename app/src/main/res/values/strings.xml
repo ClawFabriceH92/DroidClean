@@ -145,7 +145,19 @@
     <string name="battery_detail_voltage">%1$s V</string>
     <string name="battery_detail_capacity">%1$d mAh</string>
     <string name="battery_detail_cycles">%1$d cycles</string>
-    <string name="battery_detail_charge_time">plein dans %1$d min</string>
+
+    <!-- Autonomie mesurée par l'app : Android ne fournit aucun de ces chiffres -->
+    <string name="battery_forecast_life">Autonomie moyenne : %1$s (%2$d cycles observés)</string>
+    <string name="battery_forecast_recharge">Recharge en moyenne toutes les %1$s</string>
+    <string name="battery_forecast_empty">Environ %1$s avant la prochaine recharge</string>
+    <string name="battery_forecast_full">Plein dans environ %1$s</string>
+    <string name="battery_forecast_learning">Autonomie en cours de mesure : les estimations apparaîtront après quelques cycles de charge.</string>
+    <string name="battery_forecast_disabled">Mesure de l\'autonomie désactivée.</string>
+
+    <!-- Durées -->
+    <string name="duration_days_hours">%1$d j %2$d h</string>
+    <string name="duration_hours_minutes">%1$d h %2$d min</string>
+    <string name="duration_minutes">%1$d min</string>
 
     <!-- Mises à jour -->
     <string name="update_title">⬆ Mises à jour</string>
@@ -180,6 +192,8 @@
     <string name="maintenance_auto_clean_hint">En arrière-plan, appareil au repos. Ne touche jamais à vos documents.</string>
     <string name="maintenance_use_trash">Passer par la corbeille du système</string>
     <string name="maintenance_use_trash_hint">Vos documents restent récupérables environ 30 jours. Sans cette option, la suppression est définitive.</string>
+    <string name="maintenance_battery_tracking">Mesurer l\'autonomie de la batterie</string>
+    <string name="maintenance_battery_tracking_hint">Un relevé du niveau toutes les 30 minutes, plus un à chaque branchement. Conservé 30 jours sur l\'appareil, jamais envoyé.</string>
 
     <!-- Confidentialité -->
     <string name="privacy_button">Confidentialité et permissions</string>
