@@ -1,0 +1,9 @@
+The Battery card now measures real battery life: time left before the next
+recharge, average life of a full charge, and how often you recharge. Android
+provides none of these — the app derives them from a reading history that stays
+on the device.
+
+Periods where the phone was powered off, rebooted, or recharged unobserved are
+discarded: they would skew the averages.
+
+Expect a few charge cycles before the estimates appear.

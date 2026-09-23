@@ -1,0 +1,9 @@
+La carte Batterie mesure désormais l'autonomie réelle : temps restant avant la
+prochaine recharge, autonomie moyenne d'une charge complète, et fréquence de
+recharge. Android ne fournit aucun de ces chiffres — l'app les déduit de relevés
+qui restent sur l'appareil.
+
+Les périodes où le téléphone était éteint, redémarré, ou rechargé sans être
+observé sont écartées : elles fausseraient les moyennes.
+
+Comptez quelques cycles avant que les estimations apparaissent.

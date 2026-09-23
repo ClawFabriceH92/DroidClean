@@ -4,6 +4,55 @@ Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 Les sections `##` de ce fichier deviennent les notes de release GitHub, que
 l'application affiche avant de proposer une mise à jour.
 
+## 1.3.0
+
+### Autonomie réelle de la batterie
+
+Android n'expose que le niveau instantané : ni l'autonomie d'une charge, ni le
+temps restant, ni la fréquence des recharges. DroidClean mesure désormais les
+trois lui-même, à partir d'un historique de relevés local.
+
+- **Temps restant avant la prochaine recharge**, estimé sur le rythme de
+  décharge des dernières heures — pas sur une moyenne au long cours, qui ne
+  dirait rien de l'usage du moment.
+- **Autonomie moyenne** d'une charge complète, extrapolée à 100 %. L'estimateur
+  est pondéré par le pourcentage consommé : une décharge de 80 % sur deux jours
+  pèse plus lourd qu'une de 3 % sur vingt minutes.
+- **Fréquence de recharge** : tous les combien l'appareil est rebranché.
+- **Temps de charge restant** : l'estimation du système quand elle existe, sinon
+  le rythme de charge observé — beaucoup d'appareils renvoient -1.
+
+Tant qu'il n'y a pas assez de données, la carte annonce « mesure en cours »
+plutôt qu'un chiffre extrapolé du vide.
+
+Trois pièges que la mesure évite, et qui fausseraient les moyennes :
+
+- **Appareil éteint.** Chaque relevé note aussi l'horloge monotone, qui n'avance
+  pas hors tension : une nuit téléphone éteint ne compte plus comme de
+  l'autonomie.
+- **Redémarrage.** L'horloge monotone repart de zéro, la période est coupée.
+- **Charge non observée.** Un niveau qui remonte pendant une décharge trahit une
+  recharge passée entre deux relevés ; la période est coupée là aussi.
+
+Un trou de relevés dû au Doze, en revanche, ne coupe rien : l'appareil est resté
+allumé, la mesure est bonne.
+
+**Comment c'est relevé** : une tâche toutes les 30 minutes, un relevé à chaque
+branchement et débranchement, un autre à l'ouverture de l'application. Rien ne
+quitte l'appareil, l'historique est purgé à 30 jours, et le suivi se coupe
+depuis la carte Maintenance.
+
+La durée de charge restante quitte la ligne de détails pour rejoindre le bloc de
+prévisions, où elle ne fait plus doublon.
+
+### Technique
+
+- `BatteryStats` est en Kotlin pur — c'est un calcul statistique, il n'a pas à
+  être vérifié sur un téléphone : **27 tests** couvrent le découpage en cycles,
+  les trois détecteurs de discontinuité, la pondération et les prévisions.
+- L'historique est un fichier CSV dans `filesDir` plutôt que des
+  SharedPreferences, qui sont chargées en entier en mémoire.
+
 ## 1.2.0
 
 ### Le nettoyage ne supprime plus rien à l'aveugle

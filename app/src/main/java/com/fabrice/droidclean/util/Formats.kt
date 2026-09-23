@@ -83,4 +83,26 @@ object Formats {
         if (millis <= 0L || millis > now) return -1
         return ((now - millis) / 86_400_000L).toInt()
     }
+
+    /** Une durée décomposée, pour être rendue avec les libellés de la langue. */
+    data class DurationParts(val days: Int, val hours: Int, val minutes: Int) {
+        val isZero: Boolean get() = days == 0 && hours == 0 && minutes == 0
+    }
+
+    /**
+     * Décompose une durée, arrondie à la minute la plus proche.
+     *
+     * L'arrondi se fait AVANT le découpage : sans cela, 1 h 59 min 40 s
+     * s'afficherait « 1 h 59 » d'un côté et « 2 h 0 » de l'autre selon l'ordre
+     * des opérations.
+     */
+    fun splitDuration(millis: Long): DurationParts {
+        if (millis <= 0L) return DurationParts(0, 0, 0)
+        val totalMinutes = (millis + 30_000L) / 60_000L
+        return DurationParts(
+            days = (totalMinutes / 1_440L).toInt(),
+            hours = ((totalMinutes % 1_440L) / 60L).toInt(),
+            minutes = (totalMinutes % 60L).toInt(),
+        )
+    }
 }

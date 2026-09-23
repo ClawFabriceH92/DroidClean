@@ -134,7 +134,17 @@
     <string name="battery_detail_voltage">%1$s V</string>
     <string name="battery_detail_capacity">%1$d mAh</string>
     <string name="battery_detail_cycles">%1$d cycles</string>
-    <string name="battery_detail_charge_time">full in %1$d min</string>
+
+    <string name="battery_forecast_life">Average battery life: %1$s (%2$d cycles observed)</string>
+    <string name="battery_forecast_recharge">Recharged on average every %1$s</string>
+    <string name="battery_forecast_empty">About %1$s before the next recharge</string>
+    <string name="battery_forecast_full">Full in about %1$s</string>
+    <string name="battery_forecast_learning">Measuring battery life: estimates will appear after a few charge cycles.</string>
+    <string name="battery_forecast_disabled">Battery life measurement is off.</string>
+
+    <string name="duration_days_hours">%1$dd %2$dh</string>
+    <string name="duration_hours_minutes">%1$dh %2$dmin</string>
+    <string name="duration_minutes">%1$d min</string>
 
     <string name="update_title">⬆ Updates</string>
     <string name="update_auto">Check daily</string>
@@ -167,6 +177,8 @@
     <string name="maintenance_auto_clean_hint">In the background, while the device is idle. Never touches your documents.</string>
     <string name="maintenance_use_trash">Use the system bin</string>
     <string name="maintenance_use_trash_hint">Your documents stay recoverable for about 30 days. Without this, deletion is permanent.</string>
+    <string name="maintenance_battery_tracking">Measure battery life</string>
+    <string name="maintenance_battery_tracking_hint">One level reading every 30 minutes, plus one each time you plug in. Kept on the device for 30 days, never sent anywhere.</string>
 
     <string name="privacy_button">Privacy and permissions</string>
     <string name="privacy_title">Privacy</string>

@@ -1,6 +1,7 @@
 package com.fabrice.droidclean
 
 import android.app.Application
+import com.fabrice.droidclean.battery.BatteryTracker
 import com.fabrice.droidclean.clean.CleanScheduler
 import com.fabrice.droidclean.crash.CrashReporter
 import com.fabrice.droidclean.ui.Notifications
@@ -21,5 +22,6 @@ class DroidCleanApp : Application() {
         Notifications.ensureChannels(this)
         UpdateManager.sync(this)
         CleanScheduler.sync(this)
+        BatteryTracker.sync(this)
     }
 }

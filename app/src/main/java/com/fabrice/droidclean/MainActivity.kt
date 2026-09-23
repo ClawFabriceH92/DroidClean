@@ -22,6 +22,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.fabrice.droidclean.apps.Packages
 import com.fabrice.droidclean.battery.BatteryInfo
+import com.fabrice.droidclean.battery.BatteryStats
+import com.fabrice.droidclean.battery.BatteryTracker
 import com.fabrice.droidclean.clean.CleanScheduler
 import com.fabrice.droidclean.clean.Cleaner
 import com.fabrice.droidclean.crash.CrashReporter
@@ -31,6 +33,7 @@ import com.fabrice.droidclean.storage.StorageInfo
 import com.fabrice.droidclean.ui.AnalyzeActivity
 import com.fabrice.droidclean.ui.AppsActivity
 import com.fabrice.droidclean.ui.Categories
+import com.fabrice.droidclean.ui.Durations
 import com.fabrice.droidclean.ui.JunkActivity
 import com.fabrice.droidclean.ui.MainIntent
 import com.fabrice.droidclean.ui.Ui
@@ -156,6 +159,12 @@ class MainActivity : AppCompatActivity() {
         binding.swUseTrash.isChecked = CleanScheduler.useTrash(this)
         binding.swUseTrash.setOnCheckedChangeListener { _, checked ->
             CleanScheduler.setUseTrash(this, checked)
+        }
+
+        binding.swBatteryTracking.isChecked = BatteryTracker.trackingEnabled(this)
+        binding.swBatteryTracking.setOnCheckedChangeListener { _, checked ->
+            BatteryTracker.setTracking(this, checked)
+            refreshBattery()
         }
 
         binding.btnPrivacy.setOnClickListener { showPrivacy() }
@@ -400,6 +409,55 @@ class MainActivity : AppCompatActivity() {
                 },
             )
         )
+
+        refreshBatteryForecast(battery)
+    }
+
+    /**
+     * Autonomie, temps restant et fréquence de recharge.
+     *
+     * Aucun de ces chiffres n'est fourni par Android : ils se déduisent de
+     * l'historique de relevés, dont la lecture est une entrée/sortie disque.
+     * L'ouverture de l'écran est aussi l'occasion d'ajouter un relevé.
+     */
+    private fun refreshBatteryForecast(battery: BatteryInfo.Snapshot) {
+        if (!BatteryTracker.trackingEnabled(this)) {
+            binding.tvBatteryForecast.setText(R.string.battery_forecast_disabled)
+            return
+        }
+        lifecycleScope.launch {
+            val forecast = withContext(Dispatchers.IO) {
+                BatteryTracker.sample(applicationContext)
+                BatteryTracker.forecast(applicationContext, battery)
+            }
+            binding.tvBatteryForecast.text = forecastText(forecast)
+        }
+    }
+
+    /** Ne montre que ce qui est réellement mesuré — jamais un chiffre extrapolé du vide. */
+    private fun forecastText(forecast: BatteryStats.Forecast): String {
+        if (!forecast.hasAnything) return getString(R.string.battery_forecast_learning)
+
+        val lines = ArrayList<String>(4)
+        forecast.timeToFullMs?.let {
+            lines.add(getString(R.string.battery_forecast_full, Durations.format(this, it)))
+        }
+        forecast.timeToEmptyMs?.let {
+            lines.add(getString(R.string.battery_forecast_empty, Durations.format(this, it)))
+        }
+        forecast.averageFullLifeMs?.let {
+            lines.add(
+                getString(
+                    R.string.battery_forecast_life,
+                    Durations.format(this, it),
+                    forecast.sessionCount,
+                )
+            )
+        }
+        forecast.rechargeIntervalMs?.let {
+            lines.add(getString(R.string.battery_forecast_recharge, Durations.format(this, it)))
+        }
+        return lines.joinToString("\n")
     }
 
     /** Détails d'usure : seules les valeurs réellement publiées par l'appareil. */
@@ -416,10 +474,6 @@ class MainActivity : AppCompatActivity() {
         battery.capacityMah?.let { parts.add(getString(R.string.battery_detail_capacity, it)) }
         if (battery.cycleCount > 0) {
             parts.add(getString(R.string.battery_detail_cycles, battery.cycleCount))
-        }
-        if (battery.isCharging && battery.chargeTimeRemainingMs > 0) {
-            val minutes = (battery.chargeTimeRemainingMs / 60_000L).toInt()
-            if (minutes > 0) parts.add(getString(R.string.battery_detail_charge_time, minutes))
         }
         battery.technology?.takeIf { it.isNotBlank() }?.let { parts.add(it) }
         return parts.joinToString(" · ")

@@ -12,3 +12,7 @@
 -keep class com.fabrice.droidclean.clean.AutoCleanWorker {
     public <init>(android.content.Context, androidx.work.WorkerParameters);
 }
+
+-keep class com.fabrice.droidclean.battery.BatterySampleWorker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}
